@@ -2,9 +2,9 @@
 
 export default [
   {
-    name: "ТестТест",
-    icon: "dashboard",
-    path: "/test",
-    roles: ["default"],
+    name: "Список АПВ",
+    icon: "view_list",
+    path: "/APVList",
+    roles: ["HEAD_OP_DEP", "DEPUTY"],
   },
 ];

@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 export default {
-  appName: "APP NAME",
+  appName: "Ключ здоровья",
   appLink: "/",
+  //appLogo: "./logo.png",
 };

@@ -2,7 +2,9 @@
   <footer class="footer">
     <div class="container">
       <div class="copyright text-center">
-        &copy; {{ new Date().getFullYear() }}
+        &copy; <b>Губернский колодезь</b>, {{ new Date().getFullYear() }}
+        <br />
+        разработка:
         <a
           href="https://github.com/AVShatokhin?tab=repositories"
           target="_blank"

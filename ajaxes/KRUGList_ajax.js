@@ -3,7 +3,7 @@
 import { api_url } from "./common.js";
 import { defaultCatch_CB } from "./common.js";
 
-let getAPV = (component, data, when_CB, catch_CB) => {
+let getAllKrugs = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -11,7 +11,7 @@ let getAPV = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "GET",
       timeout: 15000,
-      url: `${api_url}getAPV/`,
+      url: `${api_url}getAllKrugs/`,
       params: data,
     })
     .then((response) => {
@@ -26,7 +26,30 @@ let getAPV = (component, data, when_CB, catch_CB) => {
     });
 };
 
-let addAPV = (component, data, when_CB, catch_CB) => {
+let getKrug = (component, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  component
+    .axios({
+      method: "GET",
+      timeout: 15000,
+      url: `${api_url}getKrug/`,
+      params: data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
+let addKrug = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -34,7 +57,7 @@ let addAPV = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "POST",
       timeout: 15000,
-      url: `${api_url}addAPV/`,
+      url: `${api_url}addKrug/`,
       data,
     })
     .then((response) => {
@@ -49,7 +72,7 @@ let addAPV = (component, data, when_CB, catch_CB) => {
     });
 };
 
-let deleteAPV = (component, data, when_CB, catch_CB) => {
+let deleteKrug = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -57,7 +80,7 @@ let deleteAPV = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "POST",
       timeout: 15000,
-      url: `${api_url}deleteAPV/`,
+      url: `${api_url}deleteKrug/`,
       data,
     })
     .then((response) => {
@@ -72,7 +95,7 @@ let deleteAPV = (component, data, when_CB, catch_CB) => {
     });
 };
 
-let changeAddress = (component, data, when_CB, catch_CB) => {
+let changeKrugTitle = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -80,7 +103,7 @@ let changeAddress = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "POST",
       timeout: 15000,
-      url: `${api_url}changeAddress/`,
+      url: `${api_url}changeKrugTitle/`,
       data,
     })
     .then((response) => {
@@ -94,28 +117,4 @@ let changeAddress = (component, data, when_CB, catch_CB) => {
       }
     });
 };
-
-let changeApvKrug = (component, data, when_CB, catch_CB) => {
-  let token = JSON.parse(localStorage.getItem("userData"))?.token;
-  data.token = token;
-
-  component
-    .axios({
-      method: "POST",
-      timeout: 15000,
-      url: `${api_url}changeApvKrug/`,
-      data,
-    })
-    .then((response) => {
-      when_CB(response.data);
-    })
-    .catch((error) => {
-      if (error) {
-        let errorObject = error.toJSON();
-        defaultCatch_CB(component, errorObject);
-        catch_CB(errorObject);
-      }
-    });
-};
-
-export default { getAPV, addAPV, deleteAPV, changeAddress, changeApvKrug };
+export default { getKrug, addKrug, deleteKrug, changeKrugTitle, getAllKrugs };

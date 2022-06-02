@@ -5,32 +5,32 @@
         <span class="tooltiptext">Редактировать</span>
         <md-button
           class="md-just-icon md-info md-simple my-button"
-          @click="editAddress()"
+          @click="editTitle()"
         >
           <md-icon>edit</md-icon>
         </md-button>
       </div>
       <div>
-        <span v-for="(n, i) in addressText" :key="i">
+        <span v-for="(n, i) in titleText" :key="i">
           <mark v-if="i % 2">{{ n }}</mark>
           <span v-else>{{ n }}</span>
         </span>
       </div>
     </div>
 
-    <md-dialog :md-active.sync="showNewAddressDialog">
-      <md-dialog-title>Изменение адреса АПВ</md-dialog-title>
+    <md-dialog :md-active.sync="showNewTitleDialog">
+      <md-dialog-title>Изменение названия круга</md-dialog-title>
       <div class="my-dialog-content">
         <md-field>
-          <label>Адрес</label>
-          <md-input v-model="address__" type="text"></md-input>
+          <label>Название круга</label>
+          <md-input v-model="title__" type="text"></md-input>
         </md-field>
       </div>
       <md-dialog-actions>
-        <md-button class="md-default" @click="showNewAddressDialog = false"
+        <md-button class="md-default" @click="showNewTitleDialog = false"
           >Закрыть</md-button
         >
-        <md-button class="md-primary" @click="applyAddress()"
+        <md-button class="md-primary" @click="applyTitle()"
           >Принять изменения</md-button
         >
       </md-dialog-actions>
@@ -41,12 +41,13 @@
 <script>
 export default {
   components: {},
+  name: "krug-list-edit-title",
   props: {
-    sn: {
-      type: String,
-      default: "",
+    krug_id: {
+      type: Number,
+      default: 0,
     },
-    address: {
+    title: {
       type: String,
       default: "",
     },
@@ -57,8 +58,8 @@ export default {
   },
   data() {
     return {
-      showNewAddressDialog: false,
-      address__: "",
+      showNewTitleDialog: false,
+      title__: "",
     };
   },
   methods: {
@@ -80,12 +81,12 @@ export default {
         type: "success",
       });
     },
-    editAddress() {
-      this.showNewAddressDialog = true;
-      this.address__ = this.address;
+    editTitle() {
+      this.showNewTitleDialog = true;
+      this.title__ = this.title;
     },
-    applyAddress() {
-      if (this.address__.length == 0) {
+    applyTitle() {
+      if (this.title__.length == 0) {
         this.showErrorNotify({
           errorCode: "ADDRESS_ERROR",
           errorMessage: "Адрес не может быть пустой строкой",
@@ -93,16 +94,16 @@ export default {
         return;
       }
 
-      this.showNewAddressDialog = false;
-      this.ajax.changeAddress(
+      this.showNewTitleDialog = false;
+      this.ajax.changeKrugTitle(
         this,
         {
-          sn: this.sn,
-          newAddress: this.address__,
+          krug_id: this.krug_id,
+          newTitle: this.title__,
         },
         (r) => {
           if (r.status == "ok") {
-            this.$emit("apvChanged");
+            this.$emit("krugChanged");
             this.showSuccessNotify({
               title: "OK",
               message: "Изменения приняты!",
@@ -127,8 +128,8 @@ export default {
   mounted() {},
   watch: {},
   computed: {
-    addressText() {
-      return this.highlightedTextArrays(this.address, this.searchQuery);
+    titleText() {
+      return this.highlightedTextArrays(this.title, this.searchQuery);
     },
   },
 };

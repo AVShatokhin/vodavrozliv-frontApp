@@ -4,9 +4,9 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>view_list</md-icon>
+            <md-icon>toll</md-icon>
           </div>
-          <h4 class="title">Список АПВ</h4>
+          <h4 class="title">Круги</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
@@ -51,7 +51,7 @@
                     class="mb-3"
                     clearable
                     style="width: 200px"
-                    placeholder="Поиск АПВ"
+                    placeholder="Поиск круга"
                     v-model="searchQuery"
                   >
                   </md-input>
@@ -60,43 +60,36 @@
                 <md-button
                   style="width: 230px; height: 41px; margin-right: 15px"
                   class="md-success button__add_apv"
-                  @click="showDialogAPVAdd = true"
+                  @click="showDialogKrugAdd = true"
                 >
                   <span class="material-icons"> playlist_add_circle </span>
-                  Добавить АПВ
+                  Добавить круг
                 </md-button>
               </div>
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Серийный номер">
-                <apv-list-sn-block :sn="item.sn" :searchQuery="searchQuery">
-                </apv-list-sn-block>
-              </md-table-cell>
-              <md-table-cell md-label="Адрес">
-                <apv-list-edit-address
-                  :address="item.address"
-                  :sn="item.sn"
+              <md-table-cell md-label="ID круга">
+                <krug-list-id-block
+                  :krug_id="item.krug_id"
                   :searchQuery="searchQuery"
-                  @apvChanged="apvChanged"
                 >
-                </apv-list-edit-address>
+                </krug-list-id-block>
               </md-table-cell>
-              <md-table-cell md-label="Круг">
-                <krug-list-set
-                  :krugsModel="krugsModel"
-                  :activeKrug="item.activeKrug"
-                  :sn="item.sn"
+              <md-table-cell md-label="Название круга">
+                <krug-list-edit-title
+                  :title="item.title"
+                  :krug_id="item.krug_id"
                   :searchQuery="searchQuery"
-                  @activeKrugChanged="activeKrugChanged"
+                  @krugChanged="krugChanged"
                 >
-                </krug-list-set>
+                </krug-list-edit-title>
               </md-table-cell>
               <md-table-cell md-label="">
-                <apv-list-delete-button
-                  :sn="item.sn"
-                  @apvDeleted="apvDeleted"
-                ></apv-list-delete-button>
+                <krug-list-delete-button
+                  :krug_id="item.krug_id"
+                  @krugDeleted="krugDeleted"
+                ></krug-list-delete-button>
               </md-table-cell>
             </md-table-row>
           </md-table>
@@ -119,23 +112,21 @@
       </md-card>
     </div>
 
-    <md-dialog :md-active.sync="showDialogAPVAdd">
-      <md-dialog-title>Добавление АПВ</md-dialog-title>
+    <md-dialog :md-active.sync="showDialogKrugAdd">
+      <md-dialog-title>Добавление круга</md-dialog-title>
       <div class="div__my-dialog-content">
         <md-field>
-          <label>Серйиный номер</label>
-          <md-input v-model="sn__" type="text"></md-input>
-        </md-field>
-        <md-field>
-          <label>Адрес</label>
-          <md-input v-model="address__" type="text"></md-input>
+          <label>Название круга</label>
+          <md-input v-model="title__" type="text"></md-input>
         </md-field>
       </div>
       <md-dialog-actions>
-        <md-button class="md-default" @click="showDialogAPVAdd = false"
+        <md-button class="md-default" @click="showDialogKrugAdd = false"
           >Закрыть</md-button
         >
-        <md-button class="md-primary" @click="apvAdd()">Добавить АПВ</md-button>
+        <md-button class="md-primary" @click="krugAdd()"
+          >Добавить круг</md-button
+        >
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -143,18 +134,16 @@
 
 <script>
 import { Pagination } from "@/components";
-import ApvListDeleteButton from "../../app/components/APVList/APVListDeleteButton.vue";
-import ApvListEditAddress from "../../app/components/APVList/APVListEditAddress.vue";
-import ApvListSnBlock from "../../app/components/APVList/APVListSn.vue";
-import KrugListSet from "../../app/components/KrugList/KrugListSet.vue";
+import KrugListEditTitle from "../components/KrugList/KrugListEditTitle.vue";
+import KrugListIdBlock from "../components/KrugList/KrugListId.vue";
+import KrugListDeleteButton from "../components/KrugList/KrugListDelButton.vue";
 
 export default {
   components: {
     Pagination,
-    ApvListDeleteButton,
-    ApvListEditAddress,
-    ApvListSnBlock,
-    KrugListSet,
+    KrugListDeleteButton,
+    KrugListEditTitle,
+    KrugListIdBlock,
   },
   computed: {
     to() {
@@ -173,10 +162,9 @@ export default {
   },
   data() {
     return {
-      showConfirmApvDelete: false,
-      showDialogAPVAdd: false,
-      sn__: "",
-      address__: "",
+      //showConfirmApvDelete: false,
+      showDialogKrugAdd: false,
+      title__: "",
 
       // модель данных
       usersModel: {},
@@ -191,16 +179,13 @@ export default {
       // pagination params
 
       searchQuery: "",
-
-      krugsModel: [],
-      krugsHash: {},
     };
   },
   methods: {
     recomputeModel() {
       let __temp = [];
-      for (let sn in this.usersModel) {
-        __temp.push(this.usersModel[sn]);
+      for (let i in this.usersModel) {
+        __temp.push(this.usersModel[i]);
       }
       return __temp;
     },
@@ -222,38 +207,28 @@ export default {
         type: "success",
       });
     },
-    apvAdd() {
-      if (this.sn__.length != 4) {
+    krugAdd() {
+      if (this.title__.length == 0) {
         this.showErrorNotify({
           errorCode: "SN_ERROR",
-          errorMessage:
-            "Серийный номер должен содержать 4 символа. Рекомендуемый формат: N000",
+          errorMessage: "Наименование круга не может быть пустой строкой",
         });
         return;
       }
 
-      if (this.address__.length == 0) {
-        this.showErrorNotify({
-          errorCode: "ADDRESS_ERROR",
-          errorMessage: "Адрес не может быть пустой строкой",
-        });
-        return;
-      }
+      this.showDialogKrugAdd = false;
 
-      this.showDialogAPVAdd = false;
-
-      this.ajax.addAPV(
+      this.ajax.addKrug(
         this,
         {
-          sn: this.sn__,
-          address: this.address__,
+          title: this.title__,
         },
         (r) => {
           if (r.status == "ok") {
-            this.loadAPV();
+            this.loadKrug();
             this.showSuccessNotify({
               title: "OK",
-              message: "АПВ добавлен",
+              message: "Круг добавлен",
             });
           } else {
             this.showErrorNotify(r);
@@ -264,28 +239,8 @@ export default {
         }
       );
     },
-    loadAllKrugs() {
-      this.ajax.getAllKrugs(
-        this,
-        {},
-        (r) => {
-          if (r.status == "ok") {
-            this.krugsModel = r.data;
-            this.krugsHash = {};
-            r.data.forEach((e) => {
-              this.krugsHash[`${e.krug_id}`] = e;
-            });
-          } else {
-            this.showErrorNotify(r);
-          }
-        },
-        (err) => {
-          //console.log(err);
-        }
-      );
-    },
-    loadAPV() {
-      this.ajax.getAPV(
+    loadKrug() {
+      this.ajax.getKrug(
         this,
         {
           perPage: this.perPage,
@@ -306,37 +261,15 @@ export default {
         }
       );
     },
-    apvDeleted() {
-      this.loadAPV();
+    krugDeleted() {
+      this.loadKrug();
     },
-    apvChanged() {
-      this.loadAPV();
-    },
-    activeKrugChanged(data) {
-      this.ajax.changeApvKrug(
-        this,
-        {
-          sn: data.sn,
-          newActiveKrug: data.newActiveKrug,
-        },
-        (r) => {
-          if (r.status == "ok") {
-            this.showSuccessNotify({
-              title: "Изменение круга",
-              message: "Изменение круга выполнено успешно",
-            });
-          } else {
-            this.showErrorNotify(r);
-          }
-        },
-        (err) => {
-          //console.log(err);
-        }
-      );
+    krugChanged() {
+      this.loadKrug();
     },
     searchRequest() {
       if ((this.searchQuery.length >= 3) | (this.searchQuery.length == 0)) {
-        this.loadAPV();
+        this.loadKrug();
       }
     },
     highlightedTextArrays(text, search) {
@@ -348,16 +281,15 @@ export default {
     },
   },
   mounted() {
-    this.loadAPV();
-    this.loadAllKrugs();
+    this.loadKrug();
   },
 
   watch: {
     perPage() {
-      this.loadAPV();
+      this.loadKrug();
     },
     currentPage() {
-      this.loadAPV();
+      this.loadKrug();
     },
   },
 };

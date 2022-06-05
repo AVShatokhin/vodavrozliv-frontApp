@@ -36,7 +36,7 @@ export default {
       type: String,
       default: undefined,
     },
-    eng_uid: {
+    brig_id: {
       type: Number,
       default: undefined,
     },
@@ -68,7 +68,7 @@ export default {
       this.$emit("activeKrugChanged", {
         newActiveKrug: this.newActiveKrug,
         sn: this.sn,
-        eng_uid: this.eng_uid,
+        brig_id: this.brig_id,
         oldActiveKrug: this.oldActiveKrug,
       });
     },

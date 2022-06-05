@@ -11,11 +11,11 @@ import { api_url } from "./ajaxes/common.js";
 
 import APVList from "./ajaxes/APVList_ajax.js";
 import KRUGList from "./ajaxes/KRUGList_ajax.js";
-import EngList from "./ajaxes/EngList_ajax.js";
+import BRIGList from "./ajaxes/BrigList_ajax.js";
 
 addExport(APVList);
 addExport(KRUGList);
-addExport(EngList);
+addExport(BRIGList);
 
 export { api_url };
 export default exports;

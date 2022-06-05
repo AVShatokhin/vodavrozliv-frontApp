@@ -2,9 +2,9 @@
 
 export default [
   {
-    name: "Инженеры",
+    name: "Бригады",
     icon: "assignment_ind",
-    path: "/ENGList",
+    path: "/BRIGList",
     roles: ["HEAD_OP_DEP", "DEPUTY"],
   },
 

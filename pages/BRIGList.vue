@@ -6,7 +6,7 @@
           <div class="card-icon">
             <md-icon>view_list</md-icon>
           </div>
-          <h4 class="title">Список инженеров</h4>
+          <h4 class="title">Список бригад</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
@@ -56,33 +56,44 @@
                   >
                   </md-input>
                 </md-field>
+                <md-button
+                  style="width: 230px; height: 41px; margin-right: 15px"
+                  class="md-success button__add"
+                  @click="showDialogAdd = true"
+                >
+                  <span class="material-icons"> playlist_add_circle </span>
+                  Добавить бригаду
+                </md-button>
               </div>
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Данные инженера">
-                <user-card-simple
-                  :uid="item.uid"
-                  :name="item.extended.name"
-                  :secondName="item.extended.secondName"
-                  :position="item.extended.position"
-                  :phone="item.extended.phone"
-                  :email="item.email"
+              <md-table-cell md-label="Параметры бригады">
+                <brig-card
+                  :brig_id="item.brig_id"
+                  :brigName="item.brigName"
+                  :brigCar="item.brigCar"
                   :searchQuery="searchQuery"
                 >
-                </user-card-simple>
+                </brig-card>
               </md-table-cell>
+              <md-table-cell md-label="Состав бригады"> </md-table-cell>
               <md-table-cell md-label="Круг">
                 <krug-list-set
                   :krugsModel="krugsModel"
                   :activeKrug="item.activeKrug"
-                  :eng_uid="item.uid"
+                  :brig_id="item.brig_id"
                   :searchQuery="searchQuery"
                   @activeKrugChanged="activeKrugChanged"
                 >
                 </krug-list-set>
               </md-table-cell>
-              <md-table-cell md-label=""> </md-table-cell>
+              <md-table-cell md-label="">
+                <brig-list-delete-button
+                  :brig_id="item.brig_id"
+                  @itemDeleted="itemDeleted"
+                ></brig-list-delete-button>
+              </md-table-cell>
             </md-table-row>
           </md-table>
         </md-card-content>
@@ -104,23 +115,25 @@
       </md-card>
     </div>
 
-    <md-dialog :md-active.sync="showDialogAPVAdd">
-      <md-dialog-title>Добавление АПВ</md-dialog-title>
+    <md-dialog :md-active.sync="showDialogAdd">
+      <md-dialog-title>Добавление бригады</md-dialog-title>
       <div class="div__my-dialog-content">
         <md-field>
-          <label>Серйиный номер</label>
-          <md-input v-model="sn__" type="text"></md-input>
+          <label>Имя бригады</label>
+          <md-input v-model="brigName__" type="text"></md-input>
         </md-field>
         <md-field>
-          <label>Адрес</label>
-          <md-input v-model="address__" type="text"></md-input>
+          <label>Гос. номер авто</label>
+          <md-input v-model="brigCar__" type="text"></md-input>
         </md-field>
       </div>
       <md-dialog-actions>
-        <md-button class="md-default" @click="showDialogAPVAdd = false"
+        <md-button class="md-default" @click="showDialogAdd = false"
           >Закрыть</md-button
         >
-        <md-button class="md-primary" @click="apvAdd()">Добавить АПВ</md-button>
+        <md-button class="md-primary" @click="add()"
+          >Добавить бригаду</md-button
+        >
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -129,13 +142,15 @@
 <script>
 import { Pagination } from "@/components";
 import KrugListSet from "../components/KrugList/KrugListSet.vue";
-import UserCardSimple from "../components/common/UserCardSimple.vue";
+import BrigCard from "../components/BrigList/BrigCard.vue";
+import BrigListDeleteButton from "../components/BrigList/BrigListDelButton.vue";
 
 export default {
   components: {
     Pagination,
     KrugListSet,
-    UserCardSimple,
+    BrigCard,
+    BrigListDeleteButton,
   },
   computed: {
     to() {
@@ -154,10 +169,10 @@ export default {
   },
   data() {
     return {
-      showConfirmApvDelete: false,
-      showDialogAPVAdd: false,
-      sn__: "",
-      address__: "",
+      showDialogAdd: false,
+      showDialogDelete: false,
+      brigName__: "",
+      brigCar__: "",
 
       // модель данных
       usersModel: {},
@@ -213,9 +228,9 @@ export default {
             this.krugsHash = {};
             r.data.forEach((e) => {
               this.krugsHash[`${e.krug_id}`] = e;
-              if (e?.eng_uid > 0) {
-                if (this.usersModel[e.eng_uid]) {
-                  this.usersModel[e.eng_uid].activeKrug = e.krug_id;
+              if (e?.brig_id > 0) {
+                if (this.usersModel[e.brig_id]) {
+                  this.usersModel[e.brig_id].activeKrug = e.krug_id;
                 }
               }
             });
@@ -230,7 +245,7 @@ export default {
       );
     },
     load() {
-      this.ajax.getEng(
+      this.ajax.getBrig(
         this,
         {
           perPage: this.perPage,
@@ -252,10 +267,10 @@ export default {
       );
     },
     activeKrugChanged(data) {
-      this.ajax.changeEngKrug(
+      this.ajax.changeBrigKrug(
         this,
         {
-          eng_uid: data.eng_uid,
+          brig_id: data.brig_id,
           newActiveKrug: data.newActiveKrug,
           oldActiveKrug: data.oldActiveKrug,
         },
@@ -284,6 +299,31 @@ export default {
             RegExp(`(${search.replace(/[\\^$|.*?+{}()[\]]/g, "\\$&")})`, "gi")
           )
         : [text];
+    },
+    add() {
+      this.showDialogAdd = false;
+      this.ajax.addBrig(
+        this,
+        {
+          brigName: this.brigName__,
+          brigCar: this.brigCar__,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            this.showSuccessNotify({
+              title: "OK",
+              message: "Бригада добавлена!",
+            });
+            this.load();
+          } else {
+            this.showErrorNotify(r);
+          }
+        },
+        (err) => {}
+      );
+    },
+    itemDeleted() {
+      this.load();
     },
   },
   mounted() {
@@ -326,7 +366,7 @@ export default {
   justify-content: flex-end;
 }
 
-.button__add_apv {
+.button__add {
   margin-left: 15px;
 }
 

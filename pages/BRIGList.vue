@@ -26,7 +26,7 @@
 
         <md-card-content>
           <md-table
-            :value="myModel"
+            :value="brigModelArray"
             class="paginated-table table-striped table-hover"
           >
             <md-table-toolbar>
@@ -70,14 +70,21 @@
             <md-table-row slot="md-table-row" slot-scope="{ item }">
               <md-table-cell md-label="Параметры бригады">
                 <brig-card
-                  :brig_id="item.brig_id"
-                  :brigName="item.brigName"
-                  :brigCar="item.brigCar"
+                  :brigItem="item"
                   :searchQuery="searchQuery"
+                  @brigChanged="brigChanged"
                 >
                 </brig-card>
               </md-table-cell>
-              <md-table-cell md-label="Состав бригады"> </md-table-cell>
+              <md-table-cell md-label="Состав бригады">
+                <brig-members
+                  :engModel="engModel"
+                  :brigMembers="item.brigMembers"
+                  :brig_id="item.brig_id"
+                  @brigMembersChanged="brigMembersChanged"
+                >
+                </brig-members>
+              </md-table-cell>
               <md-table-cell md-label="Круг">
                 <krug-list-set
                   :krugsModel="krugsModel"
@@ -126,6 +133,14 @@
           <label>Гос. номер авто</label>
           <md-input v-model="brigCar__" type="text"></md-input>
         </md-field>
+        <md-field>
+          <label>Код ключа</label>
+          <md-input v-model="brigKey__" type="text"></md-input>
+        </md-field>
+        <md-field>
+          <label>Номер телефона</label>
+          <md-input v-model="brigPhone__" type="text"></md-input>
+        </md-field>
       </div>
       <md-dialog-actions>
         <md-button class="md-default" @click="showDialogAdd = false"
@@ -144,6 +159,7 @@ import { Pagination } from "@/components";
 import KrugListSet from "../components/KrugList/KrugListSet.vue";
 import BrigCard from "../components/BrigList/BrigCard.vue";
 import BrigListDeleteButton from "../components/BrigList/BrigListDelButton.vue";
+import BrigMembers from "../components/BrigList/BrigMembers.vue";
 
 export default {
   components: {
@@ -151,6 +167,7 @@ export default {
     KrugListSet,
     BrigCard,
     BrigListDeleteButton,
+    BrigMembers,
   },
   computed: {
     to() {
@@ -173,12 +190,17 @@ export default {
       showDialogDelete: false,
       brigName__: "",
       brigCar__: "",
+      brigKey__: "",
+      brigPhone__: "",
 
-      // модель данных
-      usersModel: {},
-      myModel: [],
+      // модель данных бригад
+      brigModelHash: {},
+      brigModelArray: [],
       queryLength: 0,
       // модель данных
+
+      // модель данных инженеров
+      engModel: [],
 
       // pagination params
       currentPage: 1,
@@ -195,8 +217,8 @@ export default {
   methods: {
     recomputeModel() {
       let __temp = [];
-      for (let sn in this.usersModel) {
-        __temp.push(this.usersModel[sn]);
+      for (let _it in this.brigModelHash) {
+        __temp.push(this.brigModelHash[_it]);
       }
       return __temp;
     },
@@ -225,16 +247,53 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.krugsModel = r.data;
-            this.krugsHash = {};
+            this.krugsModelHash = {};
             r.data.forEach((e) => {
               this.krugsHash[`${e.krug_id}`] = e;
               if (e?.brig_id > 0) {
-                if (this.usersModel[e.brig_id]) {
-                  this.usersModel[e.brig_id].activeKrug = e.krug_id;
+                if (this.brigModelHash[e.brig_id]) {
+                  this.brigModelHash[e.brig_id].activeKrug = e.krug_id;
                 }
               }
             });
-            this.myModel = this.recomputeModel();
+            this.loadAllEngs();
+          } else {
+            this.showErrorNotify(r);
+          }
+        },
+        (err) => {
+          //console.log(err);
+        }
+      );
+    },
+    loadAllEngs() {
+      this.ajax.getAllEngs(
+        this,
+        {},
+        (r) => {
+          if (r.status == "ok") {
+            this.engModel = r.data;
+
+            for (let __brig_id in this.brigModelHash) {
+              let __tmpArray = [];
+              this.brigModelHash[__brig_id].brigMembers.forEach((uid) => {
+                let __item = this.engModel.find((e) => e.uid == uid);
+
+                if (__item == undefined) {
+                  __item = {
+                    uid,
+                    name: "USER DELETED",
+                    secondName: "",
+                    email: "",
+                  };
+                }
+
+                __tmpArray.push(__item);
+              });
+              this.brigModelHash[__brig_id].brigMembers = __tmpArray;
+
+              this.brigModelArray = this.recomputeModel();
+            }
           } else {
             this.showErrorNotify(r);
           }
@@ -254,7 +313,11 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
-            this.usersModel = r.data.items;
+            this.brigModelHash = {};
+            this.brigModelArray = [];
+            this.queryLength = 0;
+
+            this.brigModelHash = r.data.items;
             this.queryLength = r.data.queryLength;
             this.loadAllKrugs();
           } else {
@@ -307,6 +370,8 @@ export default {
         {
           brigName: this.brigName__,
           brigCar: this.brigCar__,
+          brigKey: this.brigKey__,
+          brigPhone: this.brigPhone__,
         },
         (r) => {
           if (r.status == "ok") {
@@ -322,7 +387,14 @@ export default {
         (err) => {}
       );
     },
+    brigMembersChanged() {
+      this.load();
+    },
     itemDeleted() {
+      console.log("sss");
+      this.load();
+    },
+    brigChanged() {
       this.load();
     },
   },

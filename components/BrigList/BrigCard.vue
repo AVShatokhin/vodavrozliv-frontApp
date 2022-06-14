@@ -3,7 +3,19 @@
     <div class="my-user-item-container">
       <div class="my-row">
         <div>Название бригады:</div>
-        <div class="my-item">
+        <div class="tooltip">
+          <span class="tooltiptext">Редактировать</span>
+          <md-button
+            class="md-just-icon md-info md-simple my-button"
+            @click="editData()"
+          >
+            <md-icon>edit</md-icon>
+          </md-button>
+        </div>
+      </div>
+
+      <div class="my-row">
+        <div>
           <b>
             <span v-for="(n, i) in brigNameText" :key="n">
               <mark v-if="i % 2">{{ n }}</mark>
@@ -17,16 +29,101 @@
     <div class="my-user-item-container">
       <div class="my-row">
         <div>Гос. номер авто:</div>
-        <div class="my-item">
-          <b>
-            <span v-for="(n, i) in brigCarText" :key="i">
-              <mark v-if="i % 2">{{ n }}</mark>
-              <span v-else>{{ n }}</span>
-            </span>
-          </b>
+        <div class="tooltip">
+          <span class="tooltiptext">Редактировать</span>
+          <md-button
+            class="md-just-icon md-info md-simple my-button"
+            @click="editData()"
+          >
+            <md-icon>edit</md-icon>
+          </md-button>
         </div>
       </div>
+
+      <div class="my-row">
+        <b>
+          <span v-for="(n, i) in brigCarText" :key="i">
+            <mark v-if="i % 2">{{ n }}</mark>
+            <span v-else>{{ n }}</span>
+          </span>
+        </b>
+      </div>
     </div>
+
+    <div class="my-user-item-container">
+      <div class="my-row">
+        <div>Код ключа</div>
+        <div class="tooltip">
+          <span class="tooltiptext">Редактировать</span>
+          <md-button
+            class="md-just-icon md-info md-simple my-button"
+            @click="editData()"
+          >
+            <md-icon>edit</md-icon>
+          </md-button>
+        </div>
+      </div>
+      <div>
+        <b>
+          <span v-for="(n, i) in brigKey" :key="n">
+            <mark v-if="i % 2">{{ n }}</mark>
+            <span v-else>{{ n }}</span>
+          </span>
+        </b>
+      </div>
+    </div>
+
+    <div class="my-user-item-container">
+      <div class="my-row">
+        <div>Телефон:</div>
+        <div class="tooltip">
+          <span class="tooltiptext">Редактировать</span>
+          <md-button
+            class="md-just-icon md-info md-simple my-button"
+            @click="editData()"
+          >
+            <md-icon>edit</md-icon>
+          </md-button>
+        </div>
+      </div>
+      <div class="my-row">
+        <b>
+          <span v-for="(n, i) in brigPhone" :key="i">
+            <mark v-if="i % 2">{{ n }}</mark>
+            <span v-else>{{ n }}</span>
+          </span>
+        </b>
+      </div>
+    </div>
+    <md-dialog :md-active.sync="showDialog">
+      <md-dialog-title>Параметры бригады</md-dialog-title>
+      <div class="div__my-dialog-content">
+        <md-field>
+          <label>Имя бригады</label>
+          <md-input v-model="brigName__" type="text"></md-input>
+        </md-field>
+        <md-field>
+          <label>Гос. номер авто</label>
+          <md-input v-model="brigCar__" type="text"></md-input>
+        </md-field>
+        <md-field>
+          <label>Код ключа</label>
+          <md-input v-model="brigKey__" type="text"></md-input>
+        </md-field>
+        <md-field>
+          <label>Номер телефона</label>
+          <md-input v-model="brigPhone__" type="text"></md-input>
+        </md-field>
+      </div>
+      <md-dialog-actions>
+        <md-button class="md-default" @click="showDialog = false"
+          >Закрыть</md-button
+        >
+        <md-button class="md-primary" @click="submitChanges()"
+          >Принять изменения</md-button
+        >
+      </md-dialog-actions>
+    </md-dialog>
   </div>
 </template>
 
@@ -34,17 +131,11 @@
 export default {
   name: "brig-card",
   props: {
-    brig_id: {
-      type: Number,
-      default: null,
-    },
-    brigName: {
-      type: String,
-      default: null,
-    },
-    brigCar: {
-      type: String,
-      default: null,
+    brigItem: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
     searchQuery: {
       type: String,
@@ -54,11 +145,10 @@ export default {
   data() {
     return {
       showDialog: false,
-      brigName_: null,
-      brigCar_: null,
-
       brigName__: null,
       brigCar__: null,
+      brigKey__: null,
+      brigPhone__: null,
     };
   },
   methods: {
@@ -82,29 +172,29 @@ export default {
     },
 
     editData() {
-      this.brigName__ = this.email_;
-      this.brigCar__ = this.position_;
+      this.brigName__ = this.brigItem.brigName;
+      this.brigCar__ = this.brigItem.brigCar;
+      this.brigKey__ = this.brigItem.brigKey;
+      this.brigPhone__ = this.brigItem.brigPhone;
       this.showDialog = true;
     },
     submitChanges() {
-      let data = {
-        brig_id: this.brig_id,
-        brigName: this.brigName__,
-        brigCar: this.brigCar__,
-      };
-
-      this.ajax.brigUpdate(
+      this.ajax.updateBrig(
         this,
-        data,
+        {
+          brig_id: this.brigItem.brig_id,
+          brigName: this.brigName__,
+          brigCar: this.brigCar__,
+          brigKey: this.brigKey__,
+          brigPhone: this.brigPhone__,
+        },
         (r) => {
           if (r.status == "ok") {
             this.showSuccessNotify({
               title: "OK",
               message: "Изменены данные бригады",
             });
-            this.brigName_ = this.brigName__;
-            this.brigCar_ = this.brigCar__;
-            this.$emit("dataChanged", data);
+            this.$emit("brigChanged");
             this.showDialog = false;
           } else if (r.status == "failed") {
             this.showErrorNotify(r);
@@ -129,29 +219,57 @@ export default {
   },
   watch: {},
   computed: {
+    brigKey() {
+      return this.highlightedTextArrays(
+        this.brigItem.brigKey,
+        this.searchQuery
+      );
+    },
+
+    brigPhone() {
+      return this.highlightedTextArrays(
+        this.brigItem.brigPhone,
+        this.searchQuery
+      );
+    },
     brigNameText() {
-      return this.highlightedTextArrays(this.brigName, this.searchQuery);
+      return this.highlightedTextArrays(
+        this.brigItem.brigName,
+        this.searchQuery
+      );
     },
     brigCarText() {
-      return this.highlightedTextArrays(this.brigCar, this.searchQuery);
+      return this.highlightedTextArrays(
+        this.brigItem.brigCar,
+        this.searchQuery
+      );
     },
   },
 };
 </script>
 
 <style lang="css" scoped>
+.div__my-dialog-content {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  margin: 15px;
+}
+
 .my-row {
   display: flex;
   flex-direction: row;
 }
 
+.my-button {
+  margin: 0px;
+  padding: 0px;
+  height: 16px;
+}
+
 .my-user-item-container {
   margin-top: 15px;
   margin-bottom: 15px;
-}
-
-.my-item {
-  padding-left: 15px;
 }
 
 .tooltip {
@@ -172,6 +290,7 @@ export default {
   top: 100%;
   left: 100%;
   margin-left: -60px;
+  margin-top: -50px;
   z-index: 1;
 }
 

@@ -3,7 +3,7 @@
 import { api_url } from "./common.js";
 import { defaultCatch_CB } from "./common.js";
 
-let getEng = (component, data, when_CB, catch_CB) => {
+let getAllEngs = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -11,7 +11,7 @@ let getEng = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "GET",
       timeout: 15000,
-      url: `${api_url}getEng/`,
+      url: `${api_url}getAllEngs/`,
       params: data,
     })
     .then((response) => {
@@ -95,7 +95,7 @@ let changeBrigKrug = (component, data, when_CB, catch_CB) => {
     });
 };
 
-let brigUpdate = (component, data, when_CB, catch_CB) => {
+let updateBrig = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -103,7 +103,7 @@ let brigUpdate = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "POST",
       timeout: 15000,
-      url: `${api_url}brigUpdate/`,
+      url: `${api_url}updateBrig/`,
       data,
     })
     .then((response) => {
@@ -141,11 +141,59 @@ let deleteBrig = (component, data, when_CB, catch_CB) => {
     });
 };
 
+let addEngToBrig = (component, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  component
+    .axios({
+      method: "POST",
+      timeout: 15000,
+      url: `${api_url}addEngToBrig/`,
+      data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
+let deleteEngFromBrig = (component, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  component
+    .axios({
+      method: "POST",
+      timeout: 15000,
+      url: `${api_url}deleteEngFromBrig/`,
+      data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
 export default {
-  getEng,
+  getAllEngs,
   changeBrigKrug,
   addBrig,
   getBrig,
-  brigUpdate,
+  updateBrig,
   deleteBrig,
+  addEngToBrig,
+  deleteEngFromBrig,
 };

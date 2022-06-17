@@ -72,7 +72,7 @@ let deleteAPV = (component, data, when_CB, catch_CB) => {
     });
 };
 
-let changeAddress = (component, data, when_CB, catch_CB) => {
+let updateApvOptions = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
 
@@ -80,7 +80,7 @@ let changeAddress = (component, data, when_CB, catch_CB) => {
     .axios({
       method: "POST",
       timeout: 15000,
-      url: `${api_url}changeAddress/`,
+      url: `${api_url}updateApvOptions/`,
       data,
     })
     .then((response) => {
@@ -118,4 +118,4 @@ let changeApvKrug = (component, data, when_CB, catch_CB) => {
     });
 };
 
-export default { getAPV, addAPV, deleteAPV, changeAddress, changeApvKrug };
+export default { getAPV, addAPV, deleteAPV, updateApvOptions, changeApvKrug };

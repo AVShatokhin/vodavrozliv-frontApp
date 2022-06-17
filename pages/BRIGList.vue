@@ -391,7 +391,6 @@ export default {
       this.load();
     },
     itemDeleted() {
-      console.log("sss");
       this.load();
     },
     brigChanged() {

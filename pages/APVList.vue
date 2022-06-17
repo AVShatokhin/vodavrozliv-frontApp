@@ -26,7 +26,7 @@
 
         <md-card-content>
           <md-table
-            :value="myModel"
+            :value="apvModelArray"
             class="paginated-table table-striped table-hover"
           >
             <md-table-toolbar>
@@ -73,14 +73,17 @@
                 <apv-list-sn-block :sn="item.sn" :searchQuery="searchQuery">
                 </apv-list-sn-block>
               </md-table-cell>
-              <md-table-cell md-label="Адрес">
-                <apv-list-edit-address
-                  :address="item.address"
-                  :sn="item.sn"
+              <md-table-cell md-label="Настройки">
+                <apv-list-options
+                  :apvItem="item"
                   :searchQuery="searchQuery"
                   @apvChanged="apvChanged"
                 >
-                </apv-list-edit-address>
+                </apv-list-options>
+              </md-table-cell>
+              <md-table-cell md-label="Внутренние данные">
+                <apv-list-incomes :apvItem="item" :searchQuery="searchQuery">
+                </apv-list-incomes>
               </md-table-cell>
               <md-table-cell md-label="Круг">
                 <krug-list-set
@@ -130,6 +133,14 @@
           <label>Адрес</label>
           <md-input v-model="address__" type="text"></md-input>
         </md-field>
+        <md-field>
+          <label>ТГ-ссылка</label>
+          <md-input v-model="tgLink__" type="text"></md-input>
+        </md-field>
+        <md-field>
+          <label>Сейриний номер эквайринга</label>
+          <md-input v-model="snEQ__" type="text"></md-input>
+        </md-field>
       </div>
       <md-dialog-actions>
         <md-button class="md-default" @click="showDialogAPVAdd = false"
@@ -144,17 +155,20 @@
 <script>
 import { Pagination } from "@/components";
 import ApvListDeleteButton from "../../app/components/APVList/APVListDeleteButton.vue";
-import ApvListEditAddress from "../../app/components/APVList/APVListEditAddress.vue";
+
 import ApvListSnBlock from "../../app/components/APVList/APVListSn.vue";
 import KrugListSet from "../../app/components/KrugList/KrugListSet.vue";
+import ApvListOptions from "../../app/components/APVList/APVListOptions.vue";
+import ApvListIncomes from "../../app/components/APVList/APVListIncomes.vue";
 
 export default {
   components: {
     Pagination,
     ApvListDeleteButton,
-    ApvListEditAddress,
     ApvListSnBlock,
     KrugListSet,
+    ApvListOptions,
+    ApvListIncomes,
   },
   computed: {
     to() {
@@ -177,10 +191,12 @@ export default {
       showDialogAPVAdd: false,
       sn__: "",
       address__: "",
+      tgLink__: "",
+      snEQ__: "",
 
       // модель данных
-      usersModel: {},
-      myModel: [],
+      apvModelHash: {},
+      apvModelArray: [],
       queryLength: 0,
       // модель данных
 
@@ -199,8 +215,9 @@ export default {
   methods: {
     recomputeModel() {
       let __temp = [];
-      for (let sn in this.usersModel) {
-        __temp.push(this.usersModel[sn]);
+      for (let sn in this.apvModelHash) {
+        this.apvModelHash[sn].lts = new Date(this.apvModelHash[sn].lts);
+        __temp.push(this.apvModelHash[sn]);
       }
       return __temp;
     },
@@ -247,6 +264,8 @@ export default {
         {
           sn: this.sn__,
           address: this.address__,
+          snEQ: this.snEQ__,
+          tgLink: this.tgLink__,
         },
         (r) => {
           if (r.status == "ok") {
@@ -294,9 +313,9 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
-            this.usersModel = r.data.items;
+            this.apvModelHash = r.data.items;
             this.queryLength = r.data.queryLength;
-            this.myModel = this.recomputeModel();
+            this.apvModelArray = this.recomputeModel();
           } else {
             this.showErrorNotify(r);
           }
@@ -340,6 +359,8 @@ export default {
       }
     },
     highlightedTextArrays(text, search) {
+      if (text == null) return [];
+
       return search
         ? text.split(
             RegExp(`(${search.replace(/[\\^$|.*?+{}()[\]]/g, "\\$&")})`, "gi")

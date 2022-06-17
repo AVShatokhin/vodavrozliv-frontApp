@@ -20,4 +20,16 @@ export default [
     path: "/KRUGList",
     roles: ["HEAD_OP_DEP", "DEPUTY"],
   },
+  {
+    name: "Журнал инкассаций",
+    icon: "attach_money",
+    path: "/InkasJou",
+    roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
+  },
+  {
+    name: "Основной журнал",
+    icon: "event_note",
+    path: "/MainJou",
+    roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
+  },
 ];

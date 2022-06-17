@@ -53,7 +53,6 @@ export default {
       });
     },
     deleteEng() {
-      console.log(this.engItem.uid);
       this.ajax.deleteEngFromBrig(
         this,
         { brig_id: this.brig_id, eng_uid: this.engItem.uid },

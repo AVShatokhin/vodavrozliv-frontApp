@@ -22,9 +22,7 @@ export default {
     return {};
   },
   methods: {},
-  mounted() {
-    console.log(this.item);
-  },
+  mounted() {},
   watch: {},
   computed: {},
 };

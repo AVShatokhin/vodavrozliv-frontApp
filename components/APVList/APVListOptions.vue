@@ -35,6 +35,9 @@
             <md-icon>edit</md-icon>
           </md-button>
         </div>
+        <md-button @click="checkTelegram()" class="md-info my-button-tg-check">
+          Проверка
+        </md-button>
       </div>
       <div class="my-row">
         <div>
@@ -151,6 +154,27 @@ export default {
       this.tgLink__ = this.apvItem.tgLink;
       this.snEQ__ = this.apvItem.snEQ;
     },
+    checkTelegram() {
+      this.ajax.checkTelegram(
+        this,
+        {
+          sn: this.apvItem.sn,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            this.showSuccessNotify({
+              title: "OK",
+              message: "Проверка прошла успешно!",
+            });
+          } else if (r.status == "failed") {
+            this.showErrorNotify(r);
+          }
+        },
+        (err) => {
+          //console.log(err);
+        }
+      );
+    },
     apply() {
       if (this.address__.length == 0) {
         this.showErrorNotify({
@@ -215,6 +239,13 @@ export default {
 .my-row {
   display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.my-button-tg-check {
+  width: 80px;
+  height: 27px;
+  padding-top: 2px;
 }
 
 .my-user-item-container {
@@ -226,6 +257,10 @@ export default {
   margin: 0px;
   padding: 0px;
   height: 16px;
+}
+
+.material-icons {
+  margin-right: 10px;
 }
 
 .tooltip {

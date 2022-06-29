@@ -5,6 +5,9 @@ import KRUGList from "@/app/pages/KRUGList.vue";
 import BRIGList from "@/app/pages/BRIGList.vue";
 import InkasJou from "@/app/pages/InkasJou.vue";
 import MainJou from "@/app/pages/MainJou.vue";
+import MessList from "@/app/pages/MessList.vue";
+import CmdsPanel from "@/app/pages/CmdsPanel.vue";
+import CmdsInkas from "@/app/pages/CmdsInkas.vue";
 
 export default [
   {
@@ -36,5 +39,20 @@ export default [
     path: "/MainJou",
     component: MainJou,
     name: "Основной журнал АПВ",
+  },
+  {
+    path: "/MessList",
+    component: MessList,
+    name: `Справочник "Оповещения"`,
+  },
+  {
+    path: "/CmdsPanel",
+    component: CmdsPanel,
+    name: `Панель управления`,
+  },
+  {
+    path: "/CmdsInkas",
+    component: CmdsInkas,
+    name: `Запрос инкассаций`,
   },
 ];

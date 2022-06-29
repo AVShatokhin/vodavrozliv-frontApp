@@ -22,6 +22,19 @@
 
     <div class="my-user-item-container">
       <div class="my-row">
+        <div>Тип аппарата:</div>
+      </div>
+      <div class="my-row">
+        <div>
+          <b>
+            {{ apvType[apvItem.a] }}
+          </b>
+        </div>
+      </div>
+    </div>
+
+    <div class="my-user-item-container">
+      <div class="my-row">
         <div>Стоимость:</div>
         <!-- <div class="tooltip">
           <span class="tooltiptext">Редактировать</span>
@@ -106,7 +119,13 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      apvType: {
+        0: "Стандартный",
+        1: "Киров",
+        2: "С бутылочником",
+      },
+    };
   },
   methods: {
     // showErrorNotify(r) {

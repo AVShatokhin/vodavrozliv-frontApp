@@ -88,9 +88,13 @@
               <md-table-cell md-label="Температура">
                 <main-jou-temp-card :item="item"></main-jou-temp-card>
               </md-table-cell>
-              <md-table-cell md-label="Расход">
+              <md-table-cell md-label="Датчики воды">
                 <main-jou-rashod-card :item="item"></main-jou-rashod-card>
               </md-table-cell>
+              <md-table-cell md-label="Тара">
+                <main-jou-tara-card :item="item"></main-jou-tara-card>
+              </md-table-cell>
+
               <md-table-cell md-label="Ошибки">
                 <main-jou-errors-card :item="item"></main-jou-errors-card>
               </md-table-cell>
@@ -145,6 +149,7 @@ import MainJouTempCard from "../components/MainJou/MainJouTempCard.vue";
 import MainJouEqCard from "../components/MainJou/MainJouEqCard.vue";
 import MainJouRashodCard from "../components/MainJou/MainJouRashodCard.vue";
 import MainJouTimeCard from "../components/MainJou/MainJouTimeCard.vue";
+import MainJouTaraCard from "../components/MainJou/MainJouTaraCard.vue";
 
 export default {
   components: {
@@ -157,6 +162,7 @@ export default {
     MainJouRashodCard,
     MainJouEqCard,
     MainJouTimeCard,
+    MainJouTaraCard,
   },
   computed: {
     to() {

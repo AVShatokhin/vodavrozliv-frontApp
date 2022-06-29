@@ -2,12 +2,17 @@
 
 export default [
   {
+    name: "Оповещения",
+    icon: "feedback",
+    path: "/MessList",
+    roles: ["HEAD_OP_DEP", "DEPUTY", "PROGRAMMER"],
+  },
+  {
     name: "Бригады",
     icon: "assignment_ind",
     path: "/BRIGList",
     roles: ["HEAD_OP_DEP", "DEPUTY"],
   },
-
   {
     name: "Список АПВ",
     icon: "view_list",
@@ -20,6 +25,13 @@ export default [
     path: "/KRUGList",
     roles: ["HEAD_OP_DEP", "DEPUTY"],
   },
+
+  {
+    name: "Запрос инкассаций",
+    icon: "currency_exchange",
+    path: "/CmdsInkas",
+    roles: ["ACCOUNTANT"],
+  },
   {
     name: "Журнал инкассаций",
     icon: "attach_money",
@@ -31,5 +43,11 @@ export default [
     icon: "event_note",
     path: "/MainJou",
     roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
+  },
+  {
+    name: "Управление",
+    icon: "sports_esports",
+    path: "/CmdsPanel",
+    roles: ["ENGINEER"],
   },
 ];

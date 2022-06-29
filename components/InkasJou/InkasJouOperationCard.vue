@@ -1,16 +1,19 @@
 <template>
   <div class="my-user-item-container">
     <div>
+      Уникальный DATE: <b>{{ item.dateUnique }}</b>
+    </div>
+    <div>
       Дата по аппарату: <b>{{ formatTime(item.date) }}</b>
     </div>
     <div>
-      Номер по аппарату: <b>{{ item.inkas_number }}</b>
+      Дата фиксации в системе: <b>{{ formatTime(item.lts) }}</b>
     </div>
     <div>
-      Дата фиксации: <b>{{ formatTime(item.lts) }}</b>
+      Номер инкассации по аппарату: <b>{{ item.inkas_number }}</b>
     </div>
     <div>
-      Номер в системе: <b>{{ item.inkas_id }}</b>
+      Номер инкассации в системе: <b>{{ item.inkas_id }}</b>
     </div>
   </div>
 </template>

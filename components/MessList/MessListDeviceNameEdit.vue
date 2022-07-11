@@ -1,7 +1,7 @@
 <template>
   <div class="my-user-item-container">
     <div class="my-row">
-      <div v-if="isProgrammer" class="tooltip">
+      <div v-if="$store.getters.checkPermition(permition)" class="tooltip">
         <span class="tooltiptext">Редактировать</span>
         <md-button
           class="md-just-icon md-info md-simple my-button"
@@ -53,34 +53,17 @@ export default {
     return {
       showEditDialog: false,
       deviceName__: "",
+      permition: ["PROGRAMMER"],
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     edit() {
       this.showEditDialog = true;
       this.deviceName__ = this.deviceName;
     },
     apply() {
       if (this.deviceName__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "DEVICENAME_ERROR",
           errorMessage: "Имя устройства не может быть пустой строкой",
         });
@@ -97,12 +80,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.$emit("changed");
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Изменения приняты!",
             });
           } else if (r.status == "failed") {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -121,12 +104,6 @@ export default {
   mounted() {},
   watch: {},
   computed: {
-    isProgrammer() {
-      return JSON.parse(localStorage.getItem("userData")).roles.includes(
-        "PROGRAMMER"
-      );
-    },
-
     titleText() {
       return this.highlightedTextArrays(this.title, this.searchQuery);
     },

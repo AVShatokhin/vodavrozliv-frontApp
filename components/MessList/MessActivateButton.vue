@@ -38,24 +38,6 @@ export default {
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     activate() {
       this.showConfirmDialog = false;
       this.$emit("changeIsActive", {

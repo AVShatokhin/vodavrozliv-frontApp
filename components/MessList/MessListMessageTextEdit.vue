@@ -1,7 +1,7 @@
 <template>
   <div class="my-user-item-container">
     <div class="my-row">
-      <div class="tooltip" v-if="isProgrammer">
+      <div class="tooltip" v-if="$store.getters.checkPermition(permition)">
         <span class="tooltiptext">Редактировать</span>
         <md-button
           class="md-just-icon md-info md-simple my-button"
@@ -53,34 +53,17 @@ export default {
     return {
       showEditDialog: false,
       messText__: "",
+      permition: ["PROGRAMMER"],
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     edit() {
       this.showEditDialog = true;
       this.messText__ = this.messText;
     },
     apply() {
       if (this.messText__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "MESSAGETEXT_ERROR",
           errorMessage:
             "Текстовое описание сообщения не может быть пустой строкой",
@@ -98,12 +81,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.$emit("changed");
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Изменения приняты!",
             });
           } else if (r.status == "failed") {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -114,13 +97,7 @@ export default {
   },
   mounted() {},
   watch: {},
-  computed: {
-    isProgrammer() {
-      return JSON.parse(localStorage.getItem("userData")).roles.includes(
-        "PROGRAMMER"
-      );
-    },
-  },
+  computed: {},
 };
 </script>
 

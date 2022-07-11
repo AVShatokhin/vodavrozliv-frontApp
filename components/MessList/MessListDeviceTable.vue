@@ -15,7 +15,10 @@
           >
             <md-table-toolbar>
               <div></div>
-              <div class="div__toolbar_right" v-if="isProgrammer">
+              <div
+                class="div__toolbar_right"
+                v-if="$store.getters.checkPermition(permition)"
+              >
                 <md-button
                   class="md-success button__add"
                   @click="showAddDialog = true"
@@ -39,7 +42,7 @@
               </md-table-cell>
               <md-table-cell md-label="">
                 <simple-delete-button
-                  v-if="isProgrammer"
+                  v-if="$store.getters.checkPermition(permition)"
                   :itemKey="item.errorDevice"
                   @deleteItem="deleteItem"
                 ></simple-delete-button>
@@ -79,46 +82,23 @@ import MessListDeviceNameEdit from "./MessListDeviceNameEdit.vue";
 export default {
   name: "mess-list-device-table",
   components: { SimpleDeleteButton, MessListDeviceNameEdit },
-  computed: {
-    isProgrammer() {
-      return JSON.parse(localStorage.getItem("userData")).roles.includes(
-        "PROGRAMMER"
-      );
-    },
-  },
+  computed: {},
   data() {
     return {
       showAddDialog: false,
       errorDevice__: "",
       deviceName__: "",
 
+      permition: ["PROGRAMMER"],
       // модель данных
       modelArray: [],
       // модель данных
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     addItem() {
       if (this.errorDevice__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "DEVICE_ID_ERROR",
           errorMessage: "Идентификатор устройства не может быть пустой строкой",
         });
@@ -126,7 +106,7 @@ export default {
       }
 
       if (this.deviceName__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "DEVICENAME_ERROR",
           errorMessage: "Наименование устройства не может быть пустой строкой",
         });
@@ -144,12 +124,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.load();
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Запись добавлена",
             });
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -166,7 +146,7 @@ export default {
           if (r.status == "ok") {
             this.modelArray = r.data.items;
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -182,7 +162,7 @@ export default {
           if (r.status == "ok") {
             this.load();
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {

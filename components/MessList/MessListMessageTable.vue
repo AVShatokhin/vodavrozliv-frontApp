@@ -15,7 +15,10 @@
           >
             <md-table-toolbar>
               <div></div>
-              <div class="div__toolbar_right" v-if="isProgrammer">
+              <div
+                class="div__toolbar_right"
+                v-if="$store.getters.checkPermition(permition)"
+              >
                 <md-button
                   class="md-success button__add"
                   @click="showAddDialog = true"
@@ -47,7 +50,7 @@
               </md-table-cell>
               <md-table-cell md-label="">
                 <simple-delete-button
-                  v-if="isProgrammer"
+                  v-if="$store.getters.checkPermition(permition)"
                   :itemKey="item.messCode"
                   @deleteItem="deleteItem"
                 ></simple-delete-button>
@@ -97,6 +100,7 @@ export default {
       showAddDialog: false,
       messCode__: "",
       messText__: "",
+      permition: ["PROGRAMMER"],
 
       // модель данных
       modelArray: [],
@@ -104,27 +108,9 @@ export default {
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     addItem() {
       if (this.messCode__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "MESSAGE_ID_ERROR",
           errorMessage: "Идентификатор сообщения не может быть пустой строкой",
         });
@@ -132,7 +118,7 @@ export default {
       }
 
       if (this.messText__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "MESSAGETEXT_ERROR",
           errorMessage:
             "Текстовое описание сообщения не может быть пустой строкой",
@@ -151,12 +137,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.load();
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Запись добавлена",
             });
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -173,7 +159,7 @@ export default {
           if (r.status == "ok") {
             this.modelArray = r.data.items;
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -189,12 +175,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.load();
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Запись удалена!",
             });
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -209,12 +195,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.load();
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Список рассылки изменён!",
             });
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -229,13 +215,7 @@ export default {
   mounted() {
     this.load();
   },
-  computed: {
-    isProgrammer() {
-      return JSON.parse(localStorage.getItem("userData")).roles.includes(
-        "PROGRAMMER"
-      );
-    },
-  },
+  computed: {},
   watch: {},
 };
 </script>

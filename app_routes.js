@@ -43,7 +43,7 @@ export default [
   {
     path: "/MessList",
     component: MessList,
-    name: `Справочник "Оповещения"`,
+    name: `Настройка оповещений`,
   },
   {
     path: "/CmdsPanel",

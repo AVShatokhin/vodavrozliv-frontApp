@@ -1,15 +1,18 @@
 <template>
   <div class="my-user-item-container">
     <div class="my-row">
-      <div class="tooltip" v-if="$store.getters.checkPermition(permition)">
-        <span class="tooltiptext">Редактировать</span>
+      <pattern-tooltip
+        text="Редактировать"
+        v-if="$store.getters.checkPermition(permition)"
+      >
         <md-button
           class="md-just-icon md-info md-simple my-button"
           @click="edit()"
         >
           <md-icon>edit</md-icon>
         </md-button>
-      </div>
+      </pattern-tooltip>
+
       <div>
         {{ messText }}
       </div>
@@ -36,8 +39,10 @@
 </template>
 
 <script>
+import PatternTooltip from "../../../pattern/components/PatternTooltip.vue";
+
 export default {
-  components: {},
+  components: { PatternTooltip },
   name: "mess-list-message-text-edit",
   props: {
     messCode: {
@@ -116,33 +121,6 @@ export default {
   margin: 0px;
   padding: 0px;
   height: 16px;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: rgb(55, 172, 80);
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  width: 120px;
-  top: 100%;
-  left: 100%;
-  margin-left: -100px;
-  margin-top: -50px;
-  z-index: 1;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
 }
 
 .my-dialog-content {

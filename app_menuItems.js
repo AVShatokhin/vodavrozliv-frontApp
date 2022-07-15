@@ -56,13 +56,13 @@ let jou = {
   name: "Журналы",
   items: [
     {
-      name: "Журнал инкассаций",
-      path: "/InkasJou",
+      name: "Основной журнал",
+      path: "/MainJou",
       roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
     },
     {
-      name: "Основной журнал",
-      path: "/MainJou",
+      name: "Журнал инкассаций",
+      path: "/InkasJou",
       roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
     },
   ],

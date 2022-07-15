@@ -6,6 +6,17 @@
           <div class="card-icon">
             <md-icon>event_note</md-icon>
           </div>
+          <h4 class="title">Настройки выборки</h4>
+        </md-card-header>
+
+        <main-jou-filter-card @sendRequest="sendRequest"></main-jou-filter-card>
+      </md-card>
+
+      <md-card>
+        <md-card-header class="md-card-header-icon md-card-header-green">
+          <div class="card-icon">
+            <md-icon>event_note</md-icon>
+          </div>
           <h4 class="title">Основной журнал АПВ</h4>
         </md-card-header>
 
@@ -43,29 +54,6 @@
                   </md-option>
                 </md-select>
               </md-field>
-              <div class="div__toolbar_right">
-                <md-field>
-                  <!-- <md-input
-                    @keyup.enter="searchRequest()"
-                    type="search"
-                    class="mb-3"
-                    clearable
-                    style="width: 200px"
-                    placeholder="Поиск круга"
-                    v-model="searchQuery"
-                  >
-                  </md-input> -->
-                </md-field>
-
-                <md-button
-                  style="width: 230px; height: 41px; margin-right: 15px"
-                  class="md-success button__refresh"
-                  @click="load()"
-                >
-                  <span class="material-icons"> refresh </span>
-                  Обновить
-                </md-button>
-              </div>
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
@@ -118,24 +106,6 @@
         </md-card-actions>
       </md-card>
     </div>
-
-    <!-- <md-dialog :md-active.sync="showDialogKrugAdd">
-      <md-dialog-title>Добавление круга</md-dialog-title>
-      <div class="div__my-dialog-content">
-        <md-field>
-          <label>Название круга</label>
-          <md-input v-model="title__" type="text"></md-input>
-        </md-field>
-      </div>
-      <md-dialog-actions>
-        <md-button class="md-default" @click="showDialogKrugAdd = false"
-          >Закрыть</md-button
-        >
-        <md-button class="md-primary" @click="krugAdd()"
-          >Добавить круг</md-button
-        >
-      </md-dialog-actions>
-    </md-dialog> -->
   </div>
 </template>
 
@@ -150,6 +120,7 @@ import MainJouEqCard from "../components/MainJou/MainJouEqCard.vue";
 import MainJouRashodCard from "../components/MainJou/MainJouRashodCard.vue";
 import MainJouTimeCard from "../components/MainJou/MainJouTimeCard.vue";
 import MainJouTaraCard from "../components/MainJou/MainJouTaraCard.vue";
+import MainJouFilterCard from "../components/MainJou/MainJouFilterCard.vue";
 
 export default {
   components: {
@@ -163,6 +134,7 @@ export default {
     MainJouEqCard,
     MainJouTimeCard,
     MainJouTaraCard,
+    MainJouFilterCard,
   },
   computed: {
     to() {
@@ -178,10 +150,6 @@ export default {
   },
   data() {
     return {
-      //showConfirmApvDelete: false,
-      // showDialogKrugAdd: false,
-      // title__: "",
-
       // модель данных
       model: [],
       queryLength: 0,
@@ -193,27 +161,13 @@ export default {
       perPageOptions: [5, 10, 25, 50],
       // pagination params
 
-      // searchQuery: "",
+      requestData: {},
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
+    sendRequest(requestData) {
+      this.requestData = requestData;
+      this.load();
     },
     load() {
       this.ajax.getMain(
@@ -221,14 +175,14 @@ export default {
         {
           perPage: this.perPage,
           currentPage: this.currentPage - 1,
-          // searchQuery: this.searchQuery,
+          requestData: this.requestData,
         },
         (r) => {
           if (r.status == "ok") {
             this.model = r.data.items;
             this.queryLength = r.data.queryLength;
           } else {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -236,20 +190,6 @@ export default {
         }
       );
     },
-    // searchRequest() {
-    //   if ((this.searchQuery.length >= 3) | (this.searchQuery.length == 0)) {
-    //     this.loadKrug();
-    //   }
-    // },
-    // highlightedTextArrays(text, search) {
-    //   if (text == null) return [];
-
-    //   return search
-    //     ? text.split(
-    //         RegExp(`(${search.replace(/[\\^$|.*?+{}()[\]]/g, "\\$&")})`, "gi")
-    //       )
-    //     : [text];
-    // },
   },
   mounted() {
     this.load();
@@ -267,12 +207,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.md-card .md-card-actions {
-  border: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
 .my-row {
   display: flex;
   flex-direction: row;
@@ -280,26 +214,4 @@ export default {
   margin-left: 20px;
   margin-right: 20px;
 }
-
-.material-icons {
-  margin-right: 15px;
-}
-
-.div__toolbar_right {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.button__refresh {
-  margin-left: 15px;
-}
-
-/* 
-.div__my-dialog-content {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  margin: 15px;
-} */
 </style>

@@ -63,7 +63,9 @@
               <md-table-cell md-label="Метка времени">
                 <main-jou-time-card :item="item"></main-jou-time-card>
               </md-table-cell>
-
+              <md-table-cell md-label="Сумма наличная">
+                <main-jou-nal-summ-card :item="item"></main-jou-nal-summ-card>
+              </md-table-cell>
               <md-table-cell md-label="Купюры">
                 <main-jou-kup-card :item="item"></main-jou-kup-card>
               </md-table-cell>
@@ -121,6 +123,7 @@ import MainJouRashodCard from "../components/MainJou/MainJouRashodCard.vue";
 import MainJouTimeCard from "../components/MainJou/MainJouTimeCard.vue";
 import MainJouTaraCard from "../components/MainJou/MainJouTaraCard.vue";
 import MainJouFilterCard from "../components/MainJou/MainJouFilterCard.vue";
+import MainJouNalSummCard from "../components/MainJou/MainJouNalSummCard.vue";
 
 export default {
   components: {
@@ -135,6 +138,7 @@ export default {
     MainJouTimeCard,
     MainJouTaraCard,
     MainJouFilterCard,
+    MainJouNalSummCard,
   },
   computed: {
     to() {

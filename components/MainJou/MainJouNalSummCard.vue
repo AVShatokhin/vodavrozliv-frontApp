@@ -1,25 +1,12 @@
 <template>
   <div class="my-user-item-container">
-    <div>
-      Ошибка:<br />
-      <b>{{ item.errorCode }} : {{ item.deviceName }}</b>
-    </div>
-    <div>
-      Устройство:<br />
-      <b>{{ item.errorDevice }} : {{ item.errorText }}</b>
-    </div>
-    <div>
-      Сообщения:<br />
-      <div v-for="m in item.messCode" :key="m">
-        <b>{{ m }} : {{ item.messages[m] }}</b>
-      </div>
-    </div>
+    <b>{{ item.m + item.k }}</b> руб.
   </div>
 </template>
 
 <script>
 export default {
-  name: "inkas-main-errors-card",
+  name: "main-jou-nal-summ-card-card",
   props: {
     item: {
       type: Object,

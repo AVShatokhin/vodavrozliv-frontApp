@@ -70,14 +70,7 @@ import AdvancedDatePicker from "../common/AdvancedDatePicker.vue";
 export default {
   name: "main-jou-filter-card",
   components: { SnSelector, AdvancedDatePicker },
-  props: {
-    // item: {
-    //   type: Object,
-    //   default: () => {
-    //     return {};
-    //   },
-    // },
-  },
+
   data() {
     return {
       showSelectorFilterApv: false,
@@ -197,9 +190,10 @@ export default {
       );
     },
     sendRequest() {
-      if (this.requestData?.range == null) {
-        this.requestData.range = [new Date(), new Date()];
-      }
+      this.requestData.devices = this.selectedDevices;
+      this.requestData.errors = this.selectedErrors;
+      this.requestData.messages = this.selectedMessages;
+
       this.$emit("sendRequest", this.requestData);
     },
     resetFilter() {

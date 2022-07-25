@@ -1,6 +1,11 @@
 <template>
   <div class="my-row-item">
-    <date-picker :lang="lang" v-model="range" range></date-picker>
+    <date-picker
+      type="datetime"
+      :lang="lang"
+      v-model="range"
+      range
+    ></date-picker>
     <md-button
       @click="showDateSelector = true"
       class="md-default md-simple md-just-icon"
@@ -155,37 +160,55 @@ export default {
   },
   methods: {
     setToday() {
-      this.range = [new Date(), new Date()];
+      let from = new Date();
+      from.setHours(0, 0, 0);
+      let to = new Date();
+      to.setHours(23, 59, 59);
+      this.range = [from, to];
     },
     setYesterday() {
       let from = new Date();
       from.setDate(from.getDate() - 1);
+      from.setHours(0, 0, 0);
 
-      this.range = [from, from];
+      let to = new Date();
+      to.setDate(to.getDate() - 1);
+      to.setHours(23, 59, 59);
+
+      this.range = [from, to];
     },
     setThisMonth() {
       let from = new Date();
       from.setDate(1);
+      from.setHours(0, 0, 0);
       let to = new Date();
+      to.setHours(23, 59, 59);
       this.range = [from, to];
     },
     setLastMonth() {
       let from = new Date();
       from.setDate(1);
       from.setMonth(from.getMonth() - 1);
+      from.setHours(0, 0, 0);
       let to = new Date();
       to.setDate(0);
       to.setMonth(to.getMonth());
+      to.setHours(23, 59, 59);
       this.range = [from, to];
     },
   },
-  mounted() {},
+  mounted() {
+    this.setToday();
+  },
   watch: {
     range() {
       if (this.range[0] == null) {
         this.setToday();
       }
-      this.$emit("dateChanged", this.range);
+      let from = this.range[0].getTime();
+      let to = this.range[1].getTime();
+
+      this.$emit("dateChanged", [from, to]);
     },
     resetFilter() {
       this.setToday();

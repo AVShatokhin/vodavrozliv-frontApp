@@ -7,6 +7,9 @@
       Адрес: <b>{{ item.address }}</b>
     </div>
     <div>
+      Бригада: <b>{{ item.brigName }}</b>
+    </div>
+    <div>
       Круг: <b>{{ item.krug_name }}</b>
     </div>
     <div>

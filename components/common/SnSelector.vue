@@ -8,6 +8,17 @@
         </md-option>
       </md-select>
     </md-field>
+
+    <md-button @click="checkAll(true)" class="md-default md-simple md-just-icon"
+      ><md-icon>done_all</md-icon></md-button
+    >
+
+    <md-button
+      @click="checkAll(false)"
+      class="md-default md-simple md-just-icon"
+      ><md-icon>remove_done</md-icon></md-button
+    >
+
     <md-button
       @click="showSelectorFilterApv = true"
       class="md-default md-simple md-just-icon"
@@ -271,6 +282,14 @@ export default {
         )
       );
     },
+    checkAll(type) {
+      this.selectedApvs = [];
+      if (type) {
+        Object.values(this.apvsModel).forEach((e) => {
+          this.selectedApvs.push(e.sn);
+        });
+      }
+    },
   },
   mounted() {},
   watch: {
@@ -279,6 +298,7 @@ export default {
     },
     resetFilter() {
       this.reset();
+      this.calcModels();
       this.selectedApvs = [];
     },
     data() {

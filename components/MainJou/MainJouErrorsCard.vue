@@ -2,11 +2,11 @@
   <div class="my-user-item-container">
     <div>
       Ошибка:<br />
-      <b>{{ item.errorCode }} : {{ item.deviceName }}</b>
+      <b>{{ item.errorCode }} : {{ item.errorText }}</b>
     </div>
     <div>
       Устройство:<br />
-      <b>{{ item.errorDevice }} : {{ item.errorText }}</b>
+      <b>{{ item.errorDevice }} : {{ item.deviceName }}</b>
     </div>
     <div>
       Сообщения:<br />

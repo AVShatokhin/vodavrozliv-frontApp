@@ -17,6 +17,7 @@ import MainJou from "./ajaxes/MainJou_ajax.js";
 import MessList from "./ajaxes/MessList_ajax.js";
 import CmdsPanel from "./ajaxes/CmdsPanel_ajax.js";
 import CmdsInkas from "./ajaxes/CmdsInkas_ajax.js";
+import DispatcherTable from "./ajaxes/DispatcherTable_ajax.js";
 
 addExport(APVList);
 addExport(KRUGList);
@@ -26,6 +27,7 @@ addExport(MainJou);
 addExport(MessList);
 addExport(CmdsPanel);
 addExport(CmdsInkas);
+addExport(DispatcherTable);
 
 export { api_url };
 export default exports;

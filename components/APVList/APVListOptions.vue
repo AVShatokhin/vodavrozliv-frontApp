@@ -2,15 +2,14 @@
   <div class="my-user-item-container">
     <div class="my-row">
       <div>Адрес</div>
-      <div class="tooltip">
-        <span class="tooltiptext">Редактировать</span>
+      <pattern-tooltip text="Редактировать">
         <md-button
           class="md-just-icon md-info md-simple my-button"
           @click="editData()"
         >
           <md-icon>edit</md-icon>
         </md-button>
-      </div>
+      </pattern-tooltip>
     </div>
     <div class="my-row">
       <div>
@@ -26,15 +25,15 @@
     <div class="my-user-item-container">
       <div class="my-row">
         <div>ТГ-ссылка</div>
-        <div class="tooltip">
-          <span class="tooltiptext">Редактировать</span>
+        <pattern-tooltip text="Редактировать">
           <md-button
             class="md-just-icon md-info md-simple my-button"
             @click="editData()"
           >
             <md-icon>edit</md-icon>
           </md-button>
-        </div>
+        </pattern-tooltip>
+
         <md-button @click="checkTelegram()" class="md-info my-button-tg-check">
           Проверка
         </md-button>
@@ -53,16 +52,15 @@
 
     <div class="my-user-item-container">
       <div class="my-row">
-        <div>Сейриный номер эквайринга</div>
-        <div class="tooltip">
-          <span class="tooltiptext">Редактировать</span>
+        <div>Серийный номер эквайринга</div>
+        <pattern-tooltip text="Редактировать">
           <md-button
             class="md-just-icon md-info md-simple my-button"
             @click="editData()"
           >
             <md-icon>edit</md-icon>
           </md-button>
-        </div>
+        </pattern-tooltip>
       </div>
       <div class="my-row">
         <div>
@@ -89,7 +87,7 @@
           <md-input v-model="tgLink__" type="text"></md-input>
         </md-field>
         <md-field>
-          <label>Сейриний номер эквайринга</label>
+          <label>Серийний номер эквайринга</label>
           <md-input v-model="snEQ__" type="text"></md-input>
         </md-field>
       </div>
@@ -106,9 +104,13 @@
 </template>
 
 <script>
+import PatternTooltip from "../../../pattern/components/PatternTooltip.vue";
+
 export default {
   name: "apv-list-options",
-  components: {},
+  components: {
+    PatternTooltip,
+  },
   props: {
     apvItem: {
       type: Object,
@@ -130,24 +132,6 @@ export default {
     };
   },
   methods: {
-    showErrorNotify(r) {
-      this.$notify({
-        message: `<h3>${r.errorCode}</h3>` + `<p>${r.errorMessage}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "warning",
-      });
-    },
-    showSuccessNotify(r) {
-      this.$notify({
-        message: `<h3>${r.title}</h3>` + `<p>${r.message}</p>`,
-        icon: "add_alert",
-        horizontalAlign: "center",
-        verticalAlign: "top",
-        type: "success",
-      });
-    },
     editData() {
       this.showDialog = true;
       this.address__ = this.apvItem.address;
@@ -162,12 +146,12 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Проверка прошла успешно!",
             });
           } else if (r.status == "failed") {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -177,7 +161,7 @@ export default {
     },
     apply() {
       if (this.address__.length == 0) {
-        this.showErrorNotify({
+        this.showErrorNotify(this, {
           errorCode: "ADDRESS_ERROR",
           errorMessage: "Адрес не может быть пустой строкой",
         });
@@ -196,12 +180,12 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.$emit("apvChanged");
-            this.showSuccessNotify({
+            this.showSuccessNotify(this, {
               title: "OK",
               message: "Изменения приняты!",
             });
           } else if (r.status == "failed") {
-            this.showErrorNotify(r);
+            this.showErrorNotify(this, r);
           }
         },
         (err) => {
@@ -261,33 +245,6 @@ export default {
 
 .material-icons {
   margin-right: 10px;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: rgb(55, 172, 80);
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  width: 120px;
-  top: 100%;
-  left: 100%;
-  margin-left: -100px;
-  margin-top: -50px;
-  z-index: 1;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
 }
 
 .my-dialog-content {

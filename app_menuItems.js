@@ -68,7 +68,24 @@ let jou = {
   ],
 };
 
-let dirs = [control, jou, lists, options];
+let dispatcher = {
+  icon: "manage_history",
+  name: "Диспетчерская",
+  items: [
+    {
+      name: "Сводная таблица",
+      path: "/DispatcherTable",
+      roles: ["DISPETCHER"],
+    },
+    {
+      name: "Расписание моек",
+      path: "/DispatcherTimetable",
+      roles: ["DISPETCHER"],
+    },
+  ],
+};
+
+let dirs = [dispatcher, control, jou, lists, options];
 
 let items = [];
 

@@ -2,8 +2,13 @@
   <div class="md-layout">
     <div class="md-layout-item">
       <tabs
-        :tab-name="['Устройства', 'Ошибки', 'Сообщения']"
-        :tab-icon="['devices_other', 'error', 'chat_bubble_outline']"
+        :tab-name="['Устройства', 'Ошибки', 'Сообщения', 'Напоминания']"
+        :tab-icon="[
+          'devices_other',
+          'error',
+          'chat_bubble_outline',
+          'schedule',
+        ]"
         flex-row
         nav-pills-icons
         color-button="success"
@@ -17,6 +22,9 @@
         <template slot="tab-pane-3"
           ><mess-list-message-table></mess-list-message-table
         ></template>
+        <template slot="tab-pane-4"
+          ><mess-list-reminder-table></mess-list-reminder-table
+        ></template>
       </tabs>
     </div>
   </div>
@@ -28,6 +36,7 @@ import { Tabs } from "@/components";
 import MessListDeviceTable from "../components/MessList/MessListDeviceTable.vue";
 import MessListErrorTable from "../components/MessList/MessListErrorTable.vue";
 import MessListMessageTable from "../components/MessList/MessListMessageTable.vue";
+import MessListReminderTable from "../components/MessList/MessListReminderTable.vue";
 
 export default {
   components: {
@@ -35,6 +44,7 @@ export default {
     MessListDeviceTable,
     MessListErrorTable,
     MessListMessageTable,
+    MessListReminderTable,
   },
   computed: {},
   data() {

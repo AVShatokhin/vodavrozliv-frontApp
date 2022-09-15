@@ -8,6 +8,8 @@ import MainJou from "@/app/pages/MainJou.vue";
 import MessList from "@/app/pages/MessList.vue";
 import CmdsPanel from "@/app/pages/CmdsPanel.vue";
 import CmdsInkas from "@/app/pages/CmdsInkas.vue";
+import DispatcherTable from "@/app/pages/DispatcherTable.vue";
+import DispatcherTimeTable from "@/app/pages/DispatcherTimeTable.vue";
 
 export default [
   {
@@ -54,5 +56,15 @@ export default [
     path: "/CmdsInkas",
     component: CmdsInkas,
     name: `Запрос инкассаций`,
+  },
+  {
+    path: "/DispatcherTable",
+    component: DispatcherTable,
+    name: `Сводная таблица`,
+  },
+  {
+    path: "/DispatcherTimetable",
+    component: DispatcherTimeTable,
+    name: `Расписание моек`,
   },
 ];

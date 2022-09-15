@@ -29,9 +29,24 @@
       <md-dialog-title>Фильтр селектора АПВ</md-dialog-title>
       <div class="div__my-dialog-content">
         <pattern-tab
-          :tabNames="['Тип АПВ', 'Адрес', 'Инженер', 'Бригада', 'Круг']"
+          :tabNames="[
+            'Номер',
+            'Тип АПВ',
+            'Адрес',
+            'Инженер',
+            'Бригада',
+            'Круг',
+          ]"
         >
           <template slot="tab-0">
+            <div class="my-field">
+              <md-field>
+                <label>Серийный номер АПВ</label>
+                <md-input v-model="searchSN"></md-input>
+              </md-field>
+            </div>
+          </template>
+          <template slot="tab-1">
             <div class="my-field">
               <md-field>
                 <label>Тип АПВ</label>
@@ -46,7 +61,7 @@
               </md-field>
             </div>
           </template>
-          <template slot="tab-1">
+          <template slot="tab-2">
             <div class="my-field">
               <md-field>
                 <label>Адрес АПВ</label>
@@ -54,7 +69,7 @@
               </md-field>
             </div>
           </template>
-          <template slot="tab-2">
+          <template slot="tab-3">
             <div class="my-field">
               <md-field>
                 <label>Инженер</label>
@@ -69,7 +84,7 @@
               </md-field>
             </div>
           </template>
-          <template slot="tab-3">
+          <template slot="tab-4">
             <div class="my-field">
               <md-field>
                 <label>Бригада</label>
@@ -84,7 +99,7 @@
               </md-field>
             </div>
           </template>
-          <template slot="tab-4">
+          <template slot="tab-5">
             <div class="my-field">
               <md-field>
                 <label>Круг</label>
@@ -153,6 +168,7 @@ export default {
       showSelectorFilterApv: false,
 
       searchAddress: "",
+      searchSN: "",
       selectedTypes: [],
       selectedEngs: [],
       selectedBrigs: [],
@@ -185,6 +201,7 @@ export default {
     },
     reset() {
       this.searchAddress = "";
+      this.searchSN = "";
       this.selectedTypes = [];
       this.selectedEngs = [];
       this.selectedBrigs = [];
@@ -273,11 +290,20 @@ export default {
       }
       return __out;
     },
+
+    filterSN(income) {
+      return this.searchSN.length < 2 || this.searchSN?.length == null
+        ? income
+        : income.filter((e) => e.sn.includes(this.searchSN));
+    },
+
     filter() {
       this.filterApvsModel = this.filterEngs(
         this.filterBrigs(
           this.filterKrugs(
-            this.filterAddress(this.filterTypes(Object.values(this.data.apvs)))
+            this.filterAddress(
+              this.filterSN(this.filterTypes(Object.values(this.data.apvs)))
+            )
           )
         )
       );
@@ -308,6 +334,9 @@ export default {
       this.filter();
     },
     searchAddress() {
+      this.filter();
+    },
+    searchSN() {
       this.filter();
     },
     selectedTypes() {

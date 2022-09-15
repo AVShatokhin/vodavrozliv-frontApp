@@ -6,4 +6,5 @@ export default {
   HEAD_OP_DEP: "Начальник отдела эксплуатации АПВ",
   ENGINEER: "Инженер",
   PROGRAMMER: "Программист",
+  DISPETCHER: "Диспетчер",
 };

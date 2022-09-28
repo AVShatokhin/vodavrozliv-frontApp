@@ -9,7 +9,9 @@
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
 
-        <main-jou-filter-card @sendRequest="sendRequest"></main-jou-filter-card>
+        <dispatcher-filter-card
+          @sendRequest="sendRequest"
+        ></dispatcher-filter-card>
       </md-card>
 
       <md-card>
@@ -58,35 +60,45 @@
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
               <md-table-cell md-label="Реквизиты терминала">
-                <simple-terminal-card :item="item"></simple-terminal-card>
+                <dispatcher-terminal-card
+                  :item="item"
+                ></dispatcher-terminal-card>
               </md-table-cell>
               <md-table-cell md-label="Метка времени">
-                <main-jou-time-card :item="item"></main-jou-time-card>
+                <simple-item-lts-card :item="item"></simple-item-lts-card>
               </md-table-cell>
-              <md-table-cell md-label="Сумма наличная">
-                <main-jou-nal-summ-card :item="item"></main-jou-nal-summ-card>
+              <md-table-cell md-label="Заправка">
+                <div v-if="item.chargeInfo.lts != undefined">
+                  <div>
+                    <b>{{ item.chargeInfo.v1 }}, л.</b>
+                  </div>
+                  <simple-item-lts-card
+                    :item="item.chargeInfo"
+                  ></simple-item-lts-card>
+                </div>
+                <div v-else>-</div>
               </md-table-cell>
-              <md-table-cell md-label="Купюры">
-                <main-jou-kup-card :item="item"></main-jou-kup-card>
+              <md-table-cell md-label="Продано от датчика">
+                <div>Датчик: {{ item.data.v1 }}, л.</div>
+                <div>Продано: {{ item.data.v2 }}, л.</div>
               </md-table-cell>
-              <md-table-cell md-label="Монеты">
-                <main-jou-coin-card :item="item"></main-jou-coin-card>
+              <md-table-cell md-label="Остаток">
+                <div>{{ item.remain }}, л.</div>
               </md-table-cell>
-              <md-table-cell md-label="Эквайринг">
-                <main-jou-eq-card :item="item"></main-jou-eq-card>
+              <md-table-cell md-label="Будет пуст через">
+                <div v-if="item.elapsedTime > 0">
+                  {{ item.elapsedTime }}, ч. (~ {{ item.AVGHourlySell }}, л./ч.)
+                </div>
+                <div v-else>Ошибка</div>
               </md-table-cell>
-              <md-table-cell md-label="Температура">
-                <main-jou-temp-card :item="item"></main-jou-temp-card>
-              </md-table-cell>
-              <md-table-cell md-label="Датчики воды">
-                <main-jou-rashod-card :item="item"></main-jou-rashod-card>
-              </md-table-cell>
-              <md-table-cell md-label="Тара">
-                <main-jou-tara-card :item="item"></main-jou-tara-card>
-              </md-table-cell>
-
               <md-table-cell md-label="Ошибки">
-                <main-jou-errors-card :item="item"></main-jou-errors-card>
+                <div class="my-col">
+                  <div v-if="item.data.errorCode == 3">нет воды</div>
+                  <div v-if="item.data.errorCode == 4">засор</div>
+                  <div v-if="item.data.errorCode == 15">АПВ замёрз</div>
+                  <div v-if="item.data.errorCode == 18">нет 220В в АПВ</div>
+                  <div v-if="item.online == false">нет связи с АПВ</div>
+                </div>
               </md-table-cell>
             </md-table-row>
           </md-table>
@@ -113,32 +125,16 @@
 
 <script>
 import { Pagination } from "@/components";
-import SimpleTerminalCard from "../components/common/SimpleTerminalCard.vue";
-import MainJouErrorsCard from "../components/MainJou/MainJouErrorsCard.vue";
-import MainJouKupCard from "../components/MainJou/MainJouKupCard.vue";
-import MainJouCoinCard from "../components/MainJou/MainJouCoinCard.vue";
-import MainJouTempCard from "../components/MainJou/MainJouTempCard.vue";
-import MainJouEqCard from "../components/MainJou/MainJouEqCard.vue";
-import MainJouRashodCard from "../components/MainJou/MainJouRashodCard.vue";
-import MainJouTimeCard from "../components/MainJou/MainJouTimeCard.vue";
-import MainJouTaraCard from "../components/MainJou/MainJouTaraCard.vue";
-import MainJouFilterCard from "../components/MainJou/MainJouFilterCard.vue";
-import MainJouNalSummCard from "../components/MainJou/MainJouNalSummCard.vue";
+import DispatcherFilterCard from "../components/DispatcherTable/DispatcherFilterCard.vue";
+import DispatcherTerminalCard from "../components/DispatcherTable/DispatcherTerminalCard.vue";
+import SimpleItemLtsCard from "../components/common/SimpleItemLTSCard.vue";
 
 export default {
   components: {
     Pagination,
-    SimpleTerminalCard,
-    MainJouErrorsCard,
-    MainJouKupCard,
-    MainJouCoinCard,
-    MainJouTempCard,
-    MainJouRashodCard,
-    MainJouEqCard,
-    MainJouTimeCard,
-    MainJouTaraCard,
-    MainJouFilterCard,
-    MainJouNalSummCard,
+    DispatcherFilterCard,
+    DispatcherTerminalCard,
+    SimpleItemLtsCard,
   },
   computed: {
     to() {
@@ -165,7 +161,7 @@ export default {
       perPageOptions: [5, 10, 25, 50],
       // pagination params
 
-      requestData: {},
+      requestData: { sortType: 0, queryRemain: 0, apvs: [] },
     };
   },
   methods: {
@@ -173,6 +169,7 @@ export default {
       this.requestData = requestData;
       this.load();
     },
+
     load() {
       this.ajax.getDispatcherMain(
         this,
@@ -183,7 +180,8 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
-            this.model = r.data.items;
+            this.model = [];
+            this.model = r.data.apvs;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
@@ -217,5 +215,10 @@ export default {
   justify-content: space-between;
   margin-left: 20px;
   margin-right: 20px;
+}
+
+.my-col {
+  display: flex;
+  flex-direction: column;
 }
 </style>

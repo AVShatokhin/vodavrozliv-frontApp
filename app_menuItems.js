@@ -75,12 +75,12 @@ let dispatcher = {
     {
       name: "Сводная таблица",
       path: "/DispatcherTable",
-      roles: ["DISPETCHER"],
+      roles: ["DISPATCHER"],
     },
     {
       name: "Расписание моек",
       path: "/DispatcherTimetable",
-      roles: ["DISPETCHER"],
+      roles: ["DISPATCHER"],
     },
   ],
 };

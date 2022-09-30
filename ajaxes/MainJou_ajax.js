@@ -2,6 +2,7 @@
 
 import { api_url } from "./common.js";
 import { defaultCatch_CB } from "./common.js";
+import { getSnSelectorData } from "./common.js";
 
 let getMain = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
@@ -52,4 +53,5 @@ let getMainJouFilterStructure = (component, data, when_CB, catch_CB) => {
 export default {
   getMain,
   getMainJouFilterStructure,
+  getSnSelectorData,
 };

@@ -5,25 +5,13 @@
         :resetFilter="resetFilterCmd"
         @snArrayChanged="snArrayChanged"
       ></sn-selector>
-      <div class="my-row-item">
-        <md-field>
-          <label>Сортировка</label>
-          <md-select v-model="sortType">
-            <md-option
-              v-for="item in sortTypeNames"
-              :key="item.value"
-              :value="item.value"
-              >{{ item.name }}</md-option
-            >
-          </md-select>
-        </md-field>
-      </div>
     </div>
     <div class="my-row-actions">
       <md-button class="md-default buttons" @click="resetFilter()">
         <span class="material-icons"> close </span>
         Сбросить фильтр
       </md-button>
+
       <md-button class="md-success buttons" @click="sendRequest()">
         <span class="material-icons"> refresh </span>
         Обновить
@@ -36,11 +24,35 @@
 import SnSelector from "../common/SnSelector.vue";
 
 export default {
-  name: "dispatcher-filter-card",
+  name: "anal-dayly-sell-filter-card",
   components: { SnSelector },
 
   data() {
     return {
+      json_data: [
+        {
+          index: 0,
+          sn: "T0001",
+          address: "jhvbjhbj",
+          dayly: "11",
+          horly: "12",
+        },
+        {
+          index: 1,
+          sn: "T0002",
+          address: "jhvbjhbj",
+          dayly: "11",
+          hourly: "12",
+        },
+      ],
+      json_meta: [
+        [
+          {
+            key: "charset",
+            value: "utf-8",
+          },
+        ],
+      ],
       sortType: 0,
       sortTypeNames: [
         { value: 0, name: "по серийному номеру" },
@@ -50,7 +62,7 @@ export default {
 
       data: {},
 
-      requestData: { sortType: 0, apvs: [] },
+      requestData: { sortType: 0, queryRemain: 0, apvs: [] },
       resetFilterCmd: null,
     };
   },
@@ -110,5 +122,10 @@ export default {
 
 .material-icons {
   margin-right: 15px;
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
 }
 </style>

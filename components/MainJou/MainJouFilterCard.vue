@@ -2,7 +2,6 @@
   <div class="my-user-item-container">
     <div class="my-row">
       <sn-selector
-        :data="getData"
         :resetFilter="resetFilterCmd"
         @snArrayChanged="snArrayChanged"
       ></sn-selector>

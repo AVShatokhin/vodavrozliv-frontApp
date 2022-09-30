@@ -8,6 +8,9 @@ let addExport = (methods) => {
 };
 
 import { api_url } from "./ajaxes/common.js";
+import { getSnSelectorData } from "./ajaxes/common.js";
+
+exports["getSnSelectorData"] = getSnSelectorData;
 
 import APVList from "./ajaxes/APVList_ajax.js";
 import KRUGList from "./ajaxes/KRUGList_ajax.js";
@@ -18,6 +21,7 @@ import MessList from "./ajaxes/MessList_ajax.js";
 import CmdsPanel from "./ajaxes/CmdsPanel_ajax.js";
 import CmdsInkas from "./ajaxes/CmdsInkas_ajax.js";
 import DispatcherTable from "./ajaxes/DispatcherTable_ajax.js";
+import AnalDaylySell from "./ajaxes/AnalDaylySell_ajax.js";
 
 addExport(APVList);
 addExport(KRUGList);
@@ -28,6 +32,7 @@ addExport(MessList);
 addExport(CmdsPanel);
 addExport(CmdsInkas);
 addExport(DispatcherTable);
+addExport(AnalDaylySell);
 
 export { api_url };
 export default exports;

@@ -119,7 +119,7 @@
               <p>
                 Фильтром выбрано
                 <b>{{ filterApvsModel.length || 0 }}</b> серийных номеров из
-                <b>{{ Object.keys(this.data.apvs || {}).length || 0 }}</b>
+                <b>{{ Object.keys(this.apvs || {}).length || 0 }}</b>
                 доступных
               </p>
               <p>Если фильтр не указан, то он не влияет на выборку</p>
@@ -152,12 +152,6 @@ export default {
   name: "sn-selector",
   components: { PatternTab },
   props: {
-    data: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
     resetFilter: {
       type: Boolean,
       default: undefined,
@@ -186,15 +180,24 @@ export default {
       selectedApvs: [],
       apvsModel: [],
       filterApvsModel: [],
+
+      apvs: {},
+      krugs: {},
+      brigs: {},
+      engs: {},
     };
   },
   methods: {
-    calcModels() {
-      this.engsModel = Object.values(this.data.engs);
-      this.apvsModel = Object.values(this.data.apvs);
-      this.brigsModel = Object.values(this.data.brigs);
-      this.krugsModel = Object.values(this.data.krugs);
-      this.filterApvsModel = Object.values(this.data.apvs);
+    calcModels(data) {
+      this.apvs = data.apvs;
+      this.krugs = data.krugs;
+      this.brigs = data.brigs;
+      this.engs = data.engs;
+      this.engsModel = Object.values(data.engs);
+      this.apvsModel = Object.values(data.apvs);
+      this.brigsModel = Object.values(data.brigs);
+      this.krugsModel = Object.values(data.krugs);
+      this.filterApvsModel = Object.values(data.apvs);
     },
     apply() {
       this.apvsModel = Array.from(this.filterApvsModel);
@@ -244,7 +247,7 @@ export default {
       } else {
         income.forEach((apv) => {
           let __activeKrug = apv?.activeKrug || 0;
-          let __brig_id = this.data.krugs?.[__activeKrug]?.brig_id || 0;
+          let __brig_id = this.krugs?.[__activeKrug]?.brig_id || 0;
           if (this.selectedBrigs.includes(__brig_id)) {
             __out.push(apv);
           }
@@ -252,7 +255,6 @@ export default {
       }
       return __out;
     },
-
     filterEngs(income) {
       let __out = [];
 
@@ -261,8 +263,8 @@ export default {
       } else {
         income.forEach((apv) => {
           let __activeKrug = apv.activeKrug || 0;
-          let __brig_id = this.data.krugs?.[__activeKrug]?.brig_id || 0;
-          let __brigMembers = this.data.brigs?.[__brig_id]?.brigMembers || [];
+          let __brig_id = this.krugs?.[__activeKrug]?.brig_id || 0;
+          let __brigMembers = this.brigs?.[__brig_id]?.brigMembers || [];
           let __needToPush = false;
           __brigMembers.forEach((m) => {
             if (this.selectedEngs.includes(m)) {
@@ -275,7 +277,6 @@ export default {
       }
       return __out;
     },
-
     filterAddress(income) {
       let __out = [];
 
@@ -290,19 +291,17 @@ export default {
       }
       return __out;
     },
-
     filterSN(income) {
       return this.searchSN.length < 2 || this.searchSN?.length == null
         ? income
         : income.filter((e) => e.sn.includes(this.searchSN));
     },
-
     filter() {
       this.filterApvsModel = this.filterEngs(
         this.filterBrigs(
           this.filterKrugs(
             this.filterAddress(
-              this.filterSN(this.filterTypes(Object.values(this.data.apvs)))
+              this.filterSN(this.filterTypes(Object.values(this.apvs)))
             )
           )
         )
@@ -317,18 +316,29 @@ export default {
       }
     },
   },
-  mounted() {},
+  mounted() {
+    this.ajax.getSnSelectorData(
+      this,
+      {},
+      (r) => {
+        if (r.status == "ok") {
+          this.calcModels(r.data);
+        } else {
+          this.showErrorNotify(this, r);
+        }
+      },
+      (err) => {
+        //console.log(err);
+      }
+    );
+  },
   watch: {
     selectedApvs() {
       this.$emit("snArrayChanged", this.selectedApvs);
     },
     resetFilter() {
       this.reset();
-      this.calcModels();
       this.selectedApvs = [];
-    },
-    data() {
-      this.calcModels();
     },
     selectedTypes() {
       this.filter();
@@ -357,10 +367,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-/* .my-user-item-container {
-  margin: 15px;
-} */
-
 .my-row-item {
   display: flex;
   flex-direction: row;

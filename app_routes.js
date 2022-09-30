@@ -10,6 +10,7 @@ import CmdsPanel from "@/app/pages/CmdsPanel.vue";
 import CmdsInkas from "@/app/pages/CmdsInkas.vue";
 import DispatcherTable from "@/app/pages/DispatcherTable.vue";
 import DispatcherTimeTable from "@/app/pages/DispatcherTimeTable.vue";
+import AnalDaylySell from "@/app/pages/AnalDaylySell.vue";
 
 export default [
   {
@@ -66,5 +67,10 @@ export default [
     path: "/DispatcherTimetable",
     component: DispatcherTimeTable,
     name: `Расписание моек`,
+  },
+  {
+    path: "/AnalDaylySell",
+    component: AnalDaylySell,
+    name: `Средние продажи`,
   },
 ];

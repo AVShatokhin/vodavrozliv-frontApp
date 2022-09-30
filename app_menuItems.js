@@ -85,7 +85,19 @@ let dispatcher = {
   ],
 };
 
-let dirs = [dispatcher, control, jou, lists, options];
+let analyst = {
+  icon: "analytics",
+  name: "Аналитик",
+  items: [
+    {
+      name: "Средние продажи",
+      path: "/AnalDaylySell",
+      roles: ["ANALYST"],
+    },
+  ],
+};
+
+let dirs = [analyst, dispatcher, control, jou, lists, options];
 
 let items = [];
 

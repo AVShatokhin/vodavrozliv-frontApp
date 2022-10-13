@@ -10,10 +10,12 @@ let addExport = (methods) => {
 import { api_url } from "./ajaxes/common.js";
 import { getSnSelectorData } from "./ajaxes/common.js";
 import { get } from "./ajaxes/common.js";
+import { asyncGet } from "./ajaxes/common.js";
 import { post } from "./ajaxes/common.js";
 
 exports["getSnSelectorData"] = getSnSelectorData;
 exports["get"] = get;
+exports["asyncGet"] = asyncGet;
 exports["post"] = post;
 
 import APVList from "./ajaxes/APVList_ajax.js";

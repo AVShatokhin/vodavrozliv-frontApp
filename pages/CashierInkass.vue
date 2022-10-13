@@ -21,6 +21,19 @@
         </md-card-header>
 
         <md-card-content>
+          <pod-itog :data="podItog">
+            <md-button
+              style="width: 230px; height: 41px; margin-right: 15px"
+              class="md-success button__refresh"
+              @click="
+                showAddDialog = true;
+                dontUseSn__ = false;
+              "
+            >
+              <span class="material-icons"> add_circle_outline </span>
+              добавить инкассацию
+            </md-button>
+          </pod-itog>
           <div class="my-row" md-alignment="space-between">
             <div>
               <p class="card-category">
@@ -28,7 +41,6 @@
                 {{ queryLength }} записей
               </p>
             </div>
-            <pod-itog :data="podItog"></pod-itog>
             <pagination
               class="pagination-no-border pagination-success"
               v-model="currentPage"
@@ -58,18 +70,6 @@
               </md-field>
               <div class="div__toolbar_right">
                 <md-field> </md-field>
-
-                <md-button
-                  style="width: 230px; height: 41px; margin-right: 15px"
-                  class="md-success button__refresh"
-                  @click="
-                    showAddDialog = true;
-                    dontUseSn__ = false;
-                  "
-                >
-                  <span class="material-icons"> add_circle_outline </span>
-                  добавить инкассацию
-                </md-button>
               </div>
             </md-table-toolbar>
 

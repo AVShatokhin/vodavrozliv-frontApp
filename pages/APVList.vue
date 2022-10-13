@@ -385,12 +385,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-/* .md-card .md-card-actions {
-  border: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-} */
-
 .my-row {
   display: flex;
   flex-direction: row;

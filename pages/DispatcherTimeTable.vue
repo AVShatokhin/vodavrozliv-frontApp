@@ -7,21 +7,9 @@
             <md-icon>departure_board</md-icon>
           </div>
           <h4 class="title">Расписание моек</h4>
-          <md-button class="my-md-button md-success" @click.native="load()">
-            <span class="material-icons"> refresh </span>
-            Обновить
-          </md-button>
         </md-card-header>
-        <md-card-content v-if="isApvs">
-          <div>Нет аппаратов доступных для управления</div>
-        </md-card-content>
-        <md-card-content v-else>
-          <cmd-card
-            v-for="item in model"
-            :key="item.sn"
-            :item="item"
-            @needToRefresh="load()"
-          ></cmd-card>
+        <md-card-content>
+          <div>Раздел в разработке</div>
         </md-card-content>
       </md-card>
     </div>
@@ -29,65 +17,19 @@
 </template>
 
 <script>
-import CmdCard from "../components/CmdsPanel/CmdCard.vue";
-
 export default {
-  components: { CmdCard },
-  computed: {
-    isApvs() {
-      if (this.model.length == 0) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  },
+  components: {},
+  computed: {},
   data() {
-    return {
-      model: [],
-    };
+    return {};
   },
-  methods: {
-    load() {
-      this.ajax.getApvByEng(
-        this,
-        {},
-        (r) => {
-          if (r.status == "ok") {
-            this.model = r.data;
-          } else {
-            this.showErrorNotify(r);
-          }
-        },
-        (err) => {
-          //console.log(err);
-        }
-      );
-    },
-  },
-  mounted() {
-    this.load();
-  },
+  methods: {},
+  mounted() {},
   watch: {},
 };
 </script>
 
 <style lang="css" scoped>
-.md-tabs {
-  margin-bottom: 24px;
-}
-
-.material-icons {
-  margin-right: 15px;
-}
-
-.my-md-button {
-  width: 200px;
-  height: 41px;
-  margin-top: 10px;
-  margin-left: 30px;
-}
-
 .my-row {
   display: flex;
   flex-direction: row;

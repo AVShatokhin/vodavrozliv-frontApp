@@ -94,10 +94,32 @@ let analyst = {
       path: "/AnalDaylySell",
       roles: ["ANALYST"],
     },
+    {
+      name: "Неисправности",
+      path: "/AnalErrors",
+      roles: ["ANALYST"],
+    },
   ],
 };
 
-let dirs = [analyst, dispatcher, control, jou, lists, options];
+let cashier = {
+  icon: "currency_ruble",
+  name: "Кассир",
+  items: [
+    {
+      name: "Инкассации",
+      path: "/CashierInkass",
+      roles: ["CASHIER"],
+    },
+    {
+      name: "Итоги",
+      path: "/CashierTotals",
+      roles: ["CASHIER"],
+    },
+  ],
+};
+
+let dirs = [analyst, cashier, dispatcher, control, jou, lists, options];
 
 let items = [];
 

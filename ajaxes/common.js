@@ -34,4 +34,50 @@ let getSnSelectorData = (component, data, when_CB, catch_CB) => {
     });
 };
 
-export { api_url, defaultCatch_CB, getSnSelectorData };
+let get = (component, url, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  component
+    .axios({
+      method: "GET",
+      timeout: 15000,
+      url: `${api_url}${url}/`,
+      params: data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
+let post = (component, url, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  component
+    .axios({
+      method: "POST",
+      timeout: 15000,
+      url: `${api_url}${url}/`,
+      data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
+export { api_url, defaultCatch_CB, getSnSelectorData, get, post };

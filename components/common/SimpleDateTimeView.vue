@@ -1,14 +1,8 @@
 <template>
-  <div class="my-row">
-    <div>
-      <b>{{ hour }} : {{ minute }} : {{ second }}</b>
-    </div>
-    <div>
-      <b>{{ day }} / {{ month }} / {{ year }}</b>
-    </div>
-    <div>
-      <badge :type="latencyBageType">{{ latency }}</badge>
-    </div>
+  <div class="my-date-row">
+    <b>{{ hour }} : {{ minute }} : {{ second }}</b>
+    <b>{{ day }} / {{ month }} / {{ year }}</b>
+    <badge :type="latencyBageType">{{ latency }}</badge>
   </div>
 </template>
 
@@ -97,7 +91,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.my-row {
+.my-date-row {
   display: flex;
   flex-direction: row;
   width: 100%;

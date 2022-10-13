@@ -1,11 +1,9 @@
 <template>
   <div class="my-row-item">
-    <date-picker
-      type="datetime"
-      :lang="lang"
-      v-model="range"
-      range
-    ></date-picker>
+    <slot></slot>
+
+    <date-picker :type="type" :lang="lang" v-model="range" range></date-picker>
+
     <md-button
       @click="showDateSelector = true"
       class="md-default md-simple md-just-icon"
@@ -70,12 +68,10 @@ export default {
       type: Boolean,
       default: undefined,
     },
-    // item: {
-    //   type: Object,
-    //   default: () => {
-    //     return {};
-    //   },
-    // },
+    type: {
+      type: String,
+      default: "datetime",
+    },
   },
   data() {
     return {
@@ -220,10 +216,10 @@ export default {
 
 <style lang="css" scoped>
 .my-col {
-  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  width: 100%;
 }
 
 .my-row-item {

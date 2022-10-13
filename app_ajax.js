@@ -9,8 +9,12 @@ let addExport = (methods) => {
 
 import { api_url } from "./ajaxes/common.js";
 import { getSnSelectorData } from "./ajaxes/common.js";
+import { get } from "./ajaxes/common.js";
+import { post } from "./ajaxes/common.js";
 
 exports["getSnSelectorData"] = getSnSelectorData;
+exports["get"] = get;
+exports["post"] = post;
 
 import APVList from "./ajaxes/APVList_ajax.js";
 import KRUGList from "./ajaxes/KRUGList_ajax.js";

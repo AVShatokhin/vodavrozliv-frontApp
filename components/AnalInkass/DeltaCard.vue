@@ -1,23 +1,15 @@
 <template>
   <div class="my-user-item-container">
-    <div>
-      Сумма: <b>{{ item.inkas }}</b>
-    </div>
-    <div>
-      Сумма купюрами: <b>{{ item.kup }}</b>
-    </div>
-    <div>
-      Сумма монетами: <b>{{ item.box }}</b>
-    </div>
-    <div>
-      Безнал: <b>{{ item.rd }}</b>
+    <div class="my-user-item">
+      <b>{{ item.delta }}</b
+      >, руб.
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "inkas-jou-income-card",
+  name: "summa-card",
   props: {
     item: {
       type: Object,
@@ -38,11 +30,14 @@ export default {
 
 <style lang="css" scoped>
 .my-user-item-container {
-  margin-top: 15px;
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 25px;
 }
 
-.div__red {
-  color: red;
+.my-user-item {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 </style>

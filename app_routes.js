@@ -14,6 +14,8 @@ import AnalDaylySell from "@/app/pages/AnalDaylySell.vue";
 import CashierInkass from "@/app/pages/CashierInkass.vue";
 import CashierTotals from "@/app/pages/CashierTotals.vue";
 import AnalErrors from "@/app/pages/AnalErrors.vue";
+import AnalInkass from "@/app/pages/AnalInkass.vue";
+import AnalFreeWater from "@/app/pages/AnalFreeWater.vue";
 
 export default [
   {
@@ -90,5 +92,15 @@ export default [
     path: "/AnalErrors",
     component: AnalErrors,
     name: `Неисправности`,
+  },
+  {
+    path: "/AnalInkass",
+    component: AnalInkass,
+    name: `Инкассации`,
+  },
+  {
+    path: "/AnalFreeWater",
+    component: AnalFreeWater,
+    name: `Раздача воды`,
   },
 ];

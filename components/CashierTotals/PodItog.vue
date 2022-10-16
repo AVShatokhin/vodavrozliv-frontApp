@@ -271,12 +271,12 @@ export default {
             let __summ = 0;
 
             r.data.forEach((e, ind) => {
-              let __dateCreation = new Date(e.dateCreation);
+              let __dateInkass = new Date(e.dateInkass);
 
               let __date = `${this.normalizeNumber(
-                __dateCreation.getDate()
-              )} / ${this.normalizeNumber(__dateCreation.getMonth() + 1)} / ${
-                __dateCreation.getYear() + 1900
+                __dateInkass.getDate()
+              )} / ${this.normalizeNumber(__dateInkass.getMonth() + 1)} / ${
+                __dateInkass.getYear() + 1900
               }`;
 
               __m1 += e.m1;
@@ -392,7 +392,14 @@ export default {
     },
   },
   mounted() {},
-  watch: {},
+  watch: {
+    from(newValue) {
+      requestData.dateCreationFrom = newValue;
+    },
+    to(newValue) {
+      requestData.dateCreationTo = newValue;
+    },
+  },
   computed: {},
 };
 </script>

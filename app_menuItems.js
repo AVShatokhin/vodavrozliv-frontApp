@@ -90,6 +90,11 @@ let analyst = {
   name: "Аналитик",
   items: [
     {
+      name: "Инкассации",
+      path: "/AnalInkass",
+      roles: ["ANALYST"],
+    },
+    {
       name: "Средние продажи",
       path: "/AnalDaylySell",
       roles: ["ANALYST"],
@@ -97,6 +102,11 @@ let analyst = {
     {
       name: "Неисправности",
       path: "/AnalErrors",
+      roles: ["ANALYST"],
+    },
+    {
+      name: "Раздача воды",
+      path: "/AnalFreeWater",
       roles: ["ANALYST"],
     },
   ],

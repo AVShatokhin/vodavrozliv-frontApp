@@ -4,28 +4,43 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>attach_money</md-icon>
+            <md-icon>manage_history</md-icon>
           </div>
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
 
-        <filter-card @sendRequest="sendRequest"></filter-card>
+        <anal-dayly-sell-filter-card
+          @sendRequest="sendRequest"
+        ></anal-dayly-sell-filter-card>
       </md-card>
 
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>attach_money</md-icon>
+            <md-icon>manage_history</md-icon>
           </div>
-          <h4 class="title">Инкассации</h4>
+          <h4 class="title">Средние продажи</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
-          <div>
+          <div class="my-row">
             <p class="card-category">
               Показано с {{ from + 1 }} по {{ to }} из {{ queryLength }} записей
             </p>
+
+            <p class="card-category p__padding">XML</p>
+            <p class="card-category">
+              <export-excel
+                :fields="json_fields"
+                :fetch="fetchData"
+                worksheet="CRM.Vodavrozliv"
+                :name="exportFileName"
+              >
+                <span class="material-icons pointer"> file_download </span>
+              </export-excel>
+            </p>
           </div>
+
           <pagination
             class="pagination-no-border pagination-success"
             v-model="currentPage"
@@ -54,32 +69,17 @@
                   </md-option>
                 </md-select>
               </md-field>
-              <div class="div__toolbar_right">
-                <!-- <md-button
-                  style="width: 230px; height: 41px; margin-right: 15px"
-                  class="md-success button__refresh"
-                  @click="load()"
-                >
-                  <span class="material-icons"> refresh </span>
-                  Обновить
-                </md-button> -->
-              </div>
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
               <md-table-cell md-label="Реквизиты терминала">
-                <simple-terminal-card :item="item"></simple-terminal-card>
+                <anal-terminal-card :item="item"></anal-terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Реквизиты операции">
-                <inkas-jou-operation-card
-                  :item="item"
-                ></inkas-jou-operation-card>
+              <md-table-cell md-label="День">
+                <div>{{ item.AVGDaylySell }}, л.</div>
               </md-table-cell>
-              <md-table-cell md-label="Приход">
-                <inkas-jou-income-card :item="item"></inkas-jou-income-card>
-              </md-table-cell>
-              <md-table-cell md-label="Бригада">
-                <inkas-jou-brig-card :item="item"></inkas-jou-brig-card>
+              <md-table-cell md-label="Час">
+                <div>{{ item.AVGHourlySell }}, л.</div>
               </md-table-cell>
               <md-table-cell md-label=""> </md-table-cell>
             </md-table-row>
@@ -102,45 +102,20 @@
         </md-card-actions>
       </md-card>
     </div>
-
-    <!-- <md-dialog :md-active.sync="showDialogKrugAdd">
-      <md-dialog-title>Добавление круга</md-dialog-title>
-      <div class="div__my-dialog-content">
-        <md-field>
-          <label>Название круга</label>
-          <md-input v-model="title__" type="text"></md-input>
-        </md-field>
-      </div>
-      <md-dialog-actions>
-        <md-button class="md-default" @click="showDialogKrugAdd = false"
-          >Закрыть</md-button
-        >
-        <md-button class="md-primary" @click="krugAdd()"
-          >Добавить круг</md-button
-        >
-      </md-dialog-actions>
-    </md-dialog> -->
   </div>
 </template>
 
 <script>
 import { Pagination } from "@/components";
-import InkasJouIncomeCard from "../components/InkasJou/InkasJouIncomeCard.vue";
-import SimpleTerminalCard from "../components/common/SimpleTerminalCard.vue";
-import InkasJouOperationCard from "../components/InkasJou/InkasJouOperationCard.vue";
-import InkasJouBrigCard from "../components/InkasJou/InkasJouBrigCard.vue";
-import FilterCard from "../components/InkasJou/FilterCard.vue";
+import AnalDaylySellFilterCard from "../components/AnalDaylySell/AnalDaylySellFilterCard.vue";
+import AnalTerminalCard from "../components/AnalDaylySell/AnalTerminalCard.vue";
 
 export default {
   components: {
     Pagination,
-    SimpleTerminalCard,
-    InkasJouOperationCard,
-    InkasJouIncomeCard,
-    InkasJouBrigCard,
-    FilterCard,
+    AnalDaylySellFilterCard,
+    AnalTerminalCard,
   },
-
   computed: {
     to() {
       let highBound = this.from + this.perPage;
@@ -151,9 +126,6 @@ export default {
     },
     from() {
       return this.perPage * (this.currentPage - 1);
-    },
-    snText() {
-      return this.highlightedTextArrays(this.sn__, this.searchQuery);
     },
   },
   data() {
@@ -169,11 +141,15 @@ export default {
       perPageOptions: [5, 10, 25, 50],
       // pagination params
 
-      // searchQuery: "",
-      requestData: {
-        dateInkassFrom: Math.round(new Date().getTime()),
-        dateInkassTo: Math.round(new Date().getTime()),
-        apvs: [],
+      requestData: { sortType: 0, apvs: [] },
+
+      exportFileName: "",
+      json_fields: {
+        "#": "index",
+        SN: "sn",
+        Address: "address",
+        Dayly: "dayly",
+        Hourly: "hourly",
       },
     };
   },
@@ -182,8 +158,42 @@ export default {
       this.requestData = requestData;
       this.load();
     },
+    async fetchData() {
+      this.exportFileName = "avg_sells.xls";
+
+      let __result = [];
+
+      await this.ajax.getAnalMain(
+        this,
+        {
+          perPage: -1,
+          currentPage: 0,
+          requestData: this.requestData,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            r.data.apvs.forEach((apv, index) => {
+              __result.push({
+                index: index + 1,
+                sn: apv.sn,
+                address: apv.address,
+                dayly: new String(apv.AVGDaylySell).replace(".", ","),
+                hourly: new String(apv.AVGHourlySell).replace(".", ","),
+              });
+            });
+          } else {
+            this.showErrorNotify(this, r);
+          }
+        },
+        (err) => {
+          //console.log(err);
+        }
+      );
+
+      return __result;
+    },
     load() {
-      this.ajax.getInkas(
+      this.ajax.getAnalMain(
         this,
         {
           perPage: this.perPage,
@@ -192,7 +202,8 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
-            this.model = r.data.items;
+            this.model = [];
+            this.model = r.data.apvs;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
@@ -220,39 +231,28 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.md-card .md-card-actions {
-  border: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
 .my-row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: 20px;
 }
 
-.material-icons {
-  margin-right: 15px;
-}
-
-.div__toolbar_right {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.button__refresh {
-  margin-left: 15px;
-}
-
-/* 
-.div__my-dialog-content {
+.my-col {
   display: flex;
   flex-direction: column;
-  padding: 15px;
-  margin: 15px;
-} */
+}
+
+.p__padding {
+  padding-left: 30px;
+  font-weight: bold;
+  color: rgb(60, 73, 192);
+}
+
+.pointer {
+  cursor: pointer;
+  padding-left: 5px;
+  color: rgb(60, 73, 192);
+}
 </style>

@@ -135,7 +135,6 @@ export default {
   },
   methods: {
     deleteItem() {
-      console.log(this.item.cinkass_id);
       this.ajax.post(
         this,
         "delCashierInkass",

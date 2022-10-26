@@ -100,6 +100,7 @@ export default {
         "rd:off": "Выключить модуль б/н оплаты",
         "rd:on": "Включить модуль б/н оплаты",
         "alarm:off": "Выключить сигнализацию",
+        info: "Запросить состояние",
         inkas1: "Cлот #1",
         inkas2: "Слот #2",
         inkas3: "Слот #3",
@@ -137,6 +138,7 @@ export default {
           { cmd: "rd:on", showDialog: false },
         ],
         [{ cmd: "alarm:off", showDialog: false }],
+        [{ cmd: "info", showDialog: false }],
       ],
     };
   },

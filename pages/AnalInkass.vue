@@ -174,8 +174,8 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 10,
-      perPageOptions: [5, 10, 25, 50],
+      perPage: 50,
+      perPageOptions: [25, 50, 100],
       // pagination params
 
       // searchQuery: "",
@@ -210,7 +210,6 @@ export default {
         "Сумма терминала": "terminalSumm",
         Разница: "delta",
         Безнал: "rd",
-
         Комментарий: "comment",
       },
     };
@@ -281,7 +280,6 @@ export default {
           //console.log(err);
         }
       );
-      console.log(__result);
 
       return __result;
     },

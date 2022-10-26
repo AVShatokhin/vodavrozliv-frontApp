@@ -9,9 +9,7 @@
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
 
-        <anal-dayly-sell-filter-card
-          @sendRequest="sendRequest"
-        ></anal-dayly-sell-filter-card>
+        <filter-card @sendRequest="sendRequest"></filter-card>
       </md-card>
 
       <md-card>
@@ -72,16 +70,22 @@
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
+              <md-table-cell md-label="Отсечки">
+                <date-card :item="item"></date-card>
+              </md-table-cell>
+
               <md-table-cell md-label="Реквизиты терминала">
-                <anal-terminal-card :item="item"></anal-terminal-card>
+                <terminal-card :item="item"></terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="День">
-                <div>{{ item.AVGDaylySell }}, л.</div>
+              <md-table-cell md-label="Неисправность">
+                <error-card :item="item"></error-card>
               </md-table-cell>
-              <md-table-cell md-label="Час">
-                <div>{{ item.AVGHourlySell }}, л.</div>
+              <md-table-cell md-label="Бригада">
+                {{ item.brigName }}
               </md-table-cell>
-              <md-table-cell md-label=""> </md-table-cell>
+              <md-table-cell md-label="Длительность">
+                <long-card :item="item"></long-card>
+              </md-table-cell>
             </md-table-row>
           </md-table>
         </md-card-content>
@@ -107,14 +111,20 @@
 
 <script>
 import { Pagination } from "@/components";
-import AnalDaylySellFilterCard from "../components/AnalDaylySell/AnalDaylySellFilterCard.vue";
-import AnalTerminalCard from "../components/AnalDaylySell/AnalTerminalCard.vue";
+import FilterCard from "../components/AnalErrors/FilterCard.vue";
+import TerminalCard from "../components/AnalErrors/TerminalCard.vue";
+import DateCard from "../components/AnalErrors/DateCard.vue";
+import ErrorCard from "../components/AnalErrors/ErrorCard.vue";
+import LongCard from "../components/AnalErrors/LongCard.vue";
 
 export default {
   components: {
     Pagination,
-    AnalDaylySellFilterCard,
-    AnalTerminalCard,
+    FilterCard,
+    TerminalCard,
+    DateCard,
+    ErrorCard,
+    LongCard,
   },
   computed: {
     to() {
@@ -137,19 +147,32 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 10,
-      perPageOptions: [5, 10, 25, 50],
+      perPage: 50,
+      perPageOptions: [25, 50, 100],
       // pagination params
 
-      requestData: { sortType: 0, apvs: [] },
+      requestData: {
+        sortType: 0,
+        apvs: [],
+        errors: [],
+        devices: [],
+        errorDateFrom: Math.round(new Date().getTime()),
+        errorDateTo: Math.round(new Date().getTime()),
+      },
 
       exportFileName: "",
       json_fields: {
         "#": "index",
         SN: "sn",
         Address: "address",
-        Dayly: "dayly",
-        Hourly: "hourly",
+        "Код ошибки": "errorCode",
+        "Текст ошибки": "errorText",
+        "Код устройства": "errorDevice",
+        "Имя устройства": "deviceName",
+        Начало: "startLts",
+        Конец: "stopLts",
+        "Длительность в секундах": "long",
+        "Длительность текстом": "longText",
       },
     };
   },
@@ -159,26 +182,83 @@ export default {
       this.load();
     },
     async fetchData() {
-      this.exportFileName = "avg_sells.xls";
+      let latency = (__time) => {
+        let __days = Math.trunc(__time / (24 * 3600));
+        let __hours = Math.trunc((__time - __days * 24 * 3600) / 3600);
+        let __mins = Math.trunc(
+          (__time - __days * 24 * 3600 - __hours * 3600) / 60
+        );
+
+        if (__time == 0) {
+          return "Актуально!";
+        }
+
+        if (__time < 3600) {
+          return Math.trunc(__time / 60) + " мин.";
+        }
+
+        if (__time > 7 * 24 * 3600) {
+          return Math.trunc(__time / (7 * 24 * 3600)) + " нед.";
+        }
+
+        if (__time > 24 * 3600) {
+          return `${__days} д. ${__hours} ч. ${__mins} мин.`;
+        }
+
+        if (__time >= 3600) {
+          return `${__hours} ч. ${__mins} мин.`;
+        }
+
+        return "";
+      };
+
+      let norm = (n) => {
+        return n > 9 ? n : "0" + n;
+      };
+
+      let FROM_DATE = (date) => {
+        if (date == null) return;
+
+        let __date = new Date(date);
+
+        return `${1900 + __date.getYear()}-${
+          1 + __date.getMonth() > 9
+            ? 1 + __date.getMonth()
+            : "0" + (1 + __date.getMonth())
+        }-${norm(__date.getDate())} ${norm(__date.getHours())}:${norm(
+          __date.getMinutes()
+        )}:${norm(__date.getSeconds())}`;
+      };
+
+      this.exportFileName = "errors.xls";
 
       let __result = [];
 
-      await this.ajax.getAnalMain(
+      await this.ajax.asyncGet(
         this,
+        "getAnalErrors",
         {
           perPage: -1,
           currentPage: 0,
+          loadXML: true,
           requestData: this.requestData,
         },
         (r) => {
           if (r.status == "ok") {
-            r.data.apvs.forEach((apv, index) => {
+            // console.log(r.data.items);
+            r.data.items.forEach((item, index) => {
               __result.push({
                 index: index + 1,
-                sn: apv.sn,
-                address: apv.address,
-                dayly: new String(apv.AVGDaylySell).replace(".", ","),
-                hourly: new String(apv.AVGHourlySell).replace(".", ","),
+                sn: item.sn,
+                address: item.address,
+                errorCode: item.errorCode,
+                errorText: item.errorText,
+                errorDevice: item.errorDevice,
+                deviceName: item.deviceName,
+                startLts: FROM_DATE(item.startLts),
+                stopLts: FROM_DATE(item.stopLts),
+                long: item.long,
+                longText: latency(item.long),
               });
             });
           } else {
@@ -193,8 +273,9 @@ export default {
       return __result;
     },
     load() {
-      this.ajax.getAnalMain(
+      this.ajax.get(
         this,
+        "getAnalErrors",
         {
           perPage: this.perPage,
           currentPage: this.currentPage - 1,
@@ -203,15 +284,13 @@ export default {
         (r) => {
           if (r.status == "ok") {
             this.model = [];
-            this.model = r.data.apvs;
+            this.model = r.data.items;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
       );
     },
   },

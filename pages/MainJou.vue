@@ -81,6 +81,9 @@
               <md-table-cell md-label="Датчики воды">
                 <main-jou-rashod-card :item="item"></main-jou-rashod-card>
               </md-table-cell>
+              <md-table-cell md-label="Бесплатная раздача">
+                <main-jou-free-card :item="item"></main-jou-free-card>
+              </md-table-cell>
               <md-table-cell md-label="Тара">
                 <main-jou-tara-card :item="item"></main-jou-tara-card>
               </md-table-cell>
@@ -124,6 +127,7 @@ import MainJouTimeCard from "../components/MainJou/MainJouTimeCard.vue";
 import MainJouTaraCard from "../components/MainJou/MainJouTaraCard.vue";
 import MainJouFilterCard from "../components/MainJou/MainJouFilterCard.vue";
 import MainJouNalSummCard from "../components/MainJou/MainJouNalSummCard.vue";
+import MainJouFreeCard from "../components/MainJou/MainJouFreeCard.vue";
 
 export default {
   components: {
@@ -139,6 +143,7 @@ export default {
     MainJouTaraCard,
     MainJouFilterCard,
     MainJouNalSummCard,
+    MainJouFreeCard,
   },
   computed: {
     to() {
@@ -161,8 +166,8 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 10,
-      perPageOptions: [5, 10, 25, 50],
+      perPage: 50,
+      perPageOptions: [25, 50, 100],
       // pagination params
 
       requestData: {},

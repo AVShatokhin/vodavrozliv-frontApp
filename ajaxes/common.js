@@ -1,5 +1,5 @@
-// let api_url = "http://127.0.0.1:3000/api/";
-let api_url = "http://apv.yelka.ru/api/";
+let api_url = "http://127.0.0.1:3000/api/";
+// let api_url = "http://apv.yelka.ru/api/";
 
 let defaultCatch_CB = (component, err) => {
   component.$notify({

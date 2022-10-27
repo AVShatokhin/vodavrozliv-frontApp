@@ -128,7 +128,9 @@ export default {
           this.errorsModel = r.data.errorsModel;
           this.devicesModel = r.data.devicesModel;
         },
-        (err) => {}
+        (err) => {
+          this.showErrorNotify(this, err);
+        }
       );
     },
   },

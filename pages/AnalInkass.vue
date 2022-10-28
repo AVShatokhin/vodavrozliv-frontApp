@@ -28,6 +28,23 @@
                 Показано с {{ from + 1 }} по {{ to }} из
                 {{ queryLength }} записей
               </p>
+              <md-button
+                class="md-success buttons"
+                @click="prihodAllDialog = true"
+              >
+                <span class="material-icons"> done_all </span>
+                Оприходовать все
+                <md-dialog-confirm
+                  :md-active.sync="prihodAllDialog"
+                  md-title="Подтвердите операцию"
+                  md-content="Оприходовать все инкассации, соответствующие выборке?"
+                  md-confirm-text="Оприходовать"
+                  md-cancel-text="Отмена"
+                  @md-cancel="prihodAllDialog = false"
+                  @md-confirm="prihodAll()"
+                />
+              </md-button>
+
               <p class="card-category p__padding">XML</p>
               <p class="card-category">
                 <export-excel
@@ -167,6 +184,8 @@ export default {
   },
   data() {
     return {
+      prihodAllDialog: false,
+
       // модель данных
       model: [],
       queryLength: 0,
@@ -192,6 +211,7 @@ export default {
 
       podItog: {},
       apvs: [],
+      cinkass_ids: [],
 
       //XML export
       exportFileName: "",
@@ -215,6 +235,23 @@ export default {
     };
   },
   methods: {
+    prihodAll() {
+      this.ajax.post(
+        this,
+        "setPrihodAll",
+        {
+          cinkass_ids: this.cinkass_ids,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            this.load();
+          } else {
+            this.showErrorNotify(this, r);
+          }
+        },
+        (err) => {}
+      );
+    },
     sendRequest(requestData) {
       this.requestData = requestData;
       this.load();
@@ -302,6 +339,7 @@ export default {
             this.model = r.data.items;
             this.podItog = r.podItog;
             this.apvs = r.apvs;
+            this.cinkass_ids = r.cinkass_ids;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
@@ -337,7 +375,7 @@ export default {
 }
 
 .material-icons {
-  margin-right: 25px;
+  margin-right: 15px;
 }
 
 .p__padding {
@@ -350,5 +388,12 @@ export default {
   cursor: pointer;
   padding-left: 5px;
   color: rgb(60, 73, 192);
+}
+
+.buttons {
+  width: 230px;
+  height: 41px;
+  margin-right: 15px;
+  margin-left: 15px;
 }
 </style>

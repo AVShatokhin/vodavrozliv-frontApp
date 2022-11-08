@@ -9,7 +9,7 @@ import MessList from "@/app/pages/MessList.vue";
 import CmdsPanel from "@/app/pages/CmdsPanel.vue";
 import CmdsInkas from "@/app/pages/CmdsInkas.vue";
 import DispatcherTable from "@/app/pages/DispatcherTable.vue";
-import DispatcherTimeTable from "@/app/pages/DispatcherTimeTable.vue";
+import DispatcherWash from "@/app/pages/DispatcherWash.vue";
 import AnalDaylySell from "@/app/pages/AnalDaylySell.vue";
 import CashierInkass from "@/app/pages/CashierInkass.vue";
 import CashierTotals from "@/app/pages/CashierTotals.vue";
@@ -69,8 +69,8 @@ export default [
     name: `Сводная таблица`,
   },
   {
-    path: "/DispatcherTimetable",
-    component: DispatcherTimeTable,
+    path: "/DispatcherWash",
+    component: DispatcherWash,
     name: `Расписание моек`,
   },
   {

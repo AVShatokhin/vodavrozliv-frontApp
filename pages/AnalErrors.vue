@@ -295,6 +295,9 @@ export default {
     },
   },
   mounted() {
+    let dateFrom = new Date();
+    dateFrom.setMonth(dateFrom.getMonth() - 1);
+    this.requestData.errorDateFrom = Math.round(dateFrom.getTime());
     this.load();
   },
 

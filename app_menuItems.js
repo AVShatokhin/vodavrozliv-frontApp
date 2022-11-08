@@ -79,7 +79,7 @@ let dispatcher = {
     },
     {
       name: "Расписание моек",
-      path: "/DispatcherTimetable",
+      path: "/DispatcherWash",
       roles: ["DISPATCHER"],
     },
   ],

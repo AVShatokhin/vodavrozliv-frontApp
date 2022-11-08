@@ -194,12 +194,17 @@ export default {
     },
   },
   mounted() {
-    this.setToday();
+    this.setThisMonth();
+
+    let from = this.range[0].getTime();
+    let to = this.range[1].getTime();
+
+    this.$emit("dateChanged", [from, to]);
   },
   watch: {
     range() {
       if (this.range[0] == null) {
-        this.setToday();
+        this.setThisMonth();
       }
       let from = this.range[0].getTime();
       let to = this.range[1].getTime();
@@ -207,7 +212,7 @@ export default {
       this.$emit("dateChanged", [from, to]);
     },
     resetFilter() {
-      this.setToday();
+      this.setThisMonth();
     },
   },
   computed: {},

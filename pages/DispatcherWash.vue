@@ -4,9 +4,9 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>attach_money</md-icon>
+            <md-icon>departure_board</md-icon>
           </div>
-          <h4 class="title">Настройки выборки</h4>
+          <h4 class="title">Настройка выборки</h4>
         </md-card-header>
 
         <filter-card @sendRequest="sendRequest"></filter-card>
@@ -15,17 +15,18 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>attach_money</md-icon>
+            <md-icon>departure_board</md-icon>
           </div>
-          <h4 class="title">Инкассации</h4>
+          <h4 class="title">Расписание моек</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
-          <div>
+          <div class="my-row">
             <p class="card-category">
               Показано с {{ from + 1 }} по {{ to }} из {{ queryLength }} записей
             </p>
           </div>
+
           <pagination
             class="pagination-no-border pagination-success"
             v-model="currentPage"
@@ -54,25 +55,31 @@
                   </md-option>
                 </md-select>
               </md-field>
-              <div class="div__toolbar_right"></div>
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Реквизиты терминала">
-                <simple-terminal-card :item="item"></simple-terminal-card>
+              <md-table-cell md-label="Дата">
+                <b>{{ item.date }}</b>
               </md-table-cell>
-              <md-table-cell md-label="Реквизиты операции">
-                <inkas-jou-operation-card
+              <md-table-cell md-label="Терминалы">
+                <div class="terminal_cards_container">
+                  <wash-terminal-card
+                    v-for="washObject in item.washObject"
+                    :key="washObject.sn"
+                    :item="washObject"
+                    :date="item.date"
+                    @itemDeleted="load()"
+                  >
+                  </wash-terminal-card>
+                </div>
+              </md-table-cell>
+              <md-table-cell md-label="">
+                <add-wash-button
                   :item="item"
-                ></inkas-jou-operation-card>
+                  :apvs="apvs"
+                  @itemAdded="load()"
+                ></add-wash-button>
               </md-table-cell>
-              <md-table-cell md-label="Приход">
-                <inkas-jou-income-card :item="item"></inkas-jou-income-card>
-              </md-table-cell>
-              <md-table-cell md-label="Бригада">
-                <inkas-jou-brig-card :item="item"></inkas-jou-brig-card>
-              </md-table-cell>
-              <md-table-cell md-label=""> </md-table-cell>
             </md-table-row>
           </md-table>
         </md-card-content>
@@ -93,45 +100,17 @@
         </md-card-actions>
       </md-card>
     </div>
-
-    <!-- <md-dialog :md-active.sync="showDialogKrugAdd">
-      <md-dialog-title>Добавление круга</md-dialog-title>
-      <div class="div__my-dialog-content">
-        <md-field>
-          <label>Название круга</label>
-          <md-input v-model="title__" type="text"></md-input>
-        </md-field>
-      </div>
-      <md-dialog-actions>
-        <md-button class="md-default" @click="showDialogKrugAdd = false"
-          >Закрыть</md-button
-        >
-        <md-button class="md-primary" @click="krugAdd()"
-          >Добавить круг</md-button
-        >
-      </md-dialog-actions>
-    </md-dialog> -->
   </div>
 </template>
 
 <script>
+import FilterCard from "../components/DispatcherWash/FilterCard.vue";
 import { Pagination } from "@/components";
-import InkasJouIncomeCard from "../components/InkasJou/InkasJouIncomeCard.vue";
-import SimpleTerminalCard from "../components/common/SimpleTerminalCard.vue";
-import InkasJouOperationCard from "../components/InkasJou/InkasJouOperationCard.vue";
-import InkasJouBrigCard from "../components/InkasJou/InkasJouBrigCard.vue";
-import FilterCard from "../components/InkasJou/FilterCard.vue";
+import AddWashButton from "../components/DispatcherWash/addWashButton.vue";
+import WashTerminalCard from "../components/DispatcherWash/washTerminalCard.vue";
 
 export default {
-  components: {
-    Pagination,
-    SimpleTerminalCard,
-    InkasJouOperationCard,
-    InkasJouIncomeCard,
-    InkasJouBrigCard,
-    FilterCard,
-  },
-
+  components: { FilterCard, Pagination, AddWashButton, WashTerminalCard },
   computed: {
     to() {
       let highBound = this.from + this.perPage;
@@ -142,9 +121,6 @@ export default {
     },
     from() {
       return this.perPage * (this.currentPage - 1);
-    },
-    snText() {
-      return this.highlightedTextArrays(this.sn__, this.searchQuery);
     },
   },
   data() {
@@ -160,22 +136,24 @@ export default {
       perPageOptions: [25, 50, 100],
       // pagination params
 
-      // searchQuery: "",
       requestData: {
-        dateInkassFrom: Math.round(new Date().getTime()),
-        dateInkassTo: Math.round(new Date().getTime()),
-        apvs: [],
+        dateFrom: 0,
+        dateTo: 0,
       },
+
+      apvs: {},
     };
   },
   methods: {
-    sendRequest(requestData) {
-      this.requestData = requestData;
+    sendRequest(data) {
+      this.requestData.dateFrom = data.dateFrom;
+      this.requestData.dateTo = data.dateTo;
       this.load();
     },
     load() {
-      this.ajax.getInkas(
+      this.ajax.get(
         this,
+        "getWash",
         {
           perPage: this.perPage,
           currentPage: this.currentPage - 1,
@@ -183,22 +161,19 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
+            this.model = [];
             this.model = r.data.items;
+            this.apvs = r.data.apvs;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
       );
     },
   },
-  mounted() {
-    this.load();
-  },
-
+  mounted() {},
   watch: {
     perPage() {
       this.load();
@@ -211,39 +186,18 @@ export default {
 </script>
 
 <style lang="css" scoped>
-.md-card .md-card-actions {
-  border: 0;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
 .my-row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: 20px;
 }
 
-.material-icons {
-  margin-right: 15px;
-}
-
-.div__toolbar_right {
+.terminal_cards_container {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: 100%;
 }
-
-.button__refresh {
-  margin-left: 15px;
-}
-
-/* 
-.div__my-dialog-content {
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-  margin: 15px;
-} */
 </style>

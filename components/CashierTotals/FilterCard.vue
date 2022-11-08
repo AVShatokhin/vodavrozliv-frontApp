@@ -58,7 +58,9 @@ export default {
       this.resetFilterCmd = !this.resetFilterCmd;
     },
   },
-  mounted() {},
+  mounted() {
+    this.$emit("sendRequest", this.requestData);
+  },
   watch: {},
   computed: {},
 };

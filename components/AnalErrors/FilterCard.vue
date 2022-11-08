@@ -136,6 +136,7 @@ export default {
   },
   mounted() {
     this.load();
+    this.$emit("sendRequest", this.requestData);
   },
   watch: {},
   computed: {},

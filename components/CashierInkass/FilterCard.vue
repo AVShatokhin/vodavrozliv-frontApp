@@ -116,7 +116,9 @@ export default {
       this.requestData.apvs = apvs;
     },
   },
-  mounted() {},
+  mounted() {
+    this.$emit("sendRequest", this.requestData);
+  },
   watch: {},
   computed: {},
 };

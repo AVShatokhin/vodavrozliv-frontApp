@@ -201,8 +201,8 @@ export default {
       requestData: {
         useDate: "creation",
         sortType: 0,
-        dateCreationFrom: Math.round(new Date().getTime()),
-        dateCreationTo: Math.round(new Date().getTime()),
+        dateCreationFrom: 0,
+        dateCreationTo: 0,
         dateInkassFrom: 0,
         dateInkassTo: 0,
         apvs: [],
@@ -256,12 +256,7 @@ export default {
       this.requestData = requestData;
       this.load();
     },
-    dateInkassChanged(newValue) {
-      this.dateInkass__ = Math.round(newValue.getTime() / 1000);
-    },
-    dateCreationChanged(newValue) {
-      this.dateCreation__ = Math.round(newValue.getTime() / 1000);
-    },
+
     async fetchData() {
       this.exportFileName = "inkass.xls";
 
@@ -313,9 +308,7 @@ export default {
             this.showErrorNotify(this, r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
       );
 
       return __result;
@@ -345,15 +338,11 @@ export default {
             this.showErrorNotify(this, r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
       );
     },
   },
-  mounted() {
-    this.load();
-  },
+  mounted() {},
   watch: {
     perPage() {
       this.load();

@@ -79,25 +79,36 @@
                 <div v-else>-</div>
               </md-table-cell>
               <md-table-cell md-label="Продано от датчика">
-                <div>Датчик: {{ item.data.v1 }}, л.</div>
-                <div>Продано: {{ item.data.v2 }}, л.</div>
+                <div>
+                  <b>Датчик: {{ item.data.v1 }}, л.</b>
+                </div>
+                <div>
+                  <b>Продано: {{ item.data.v2 }}, л.</b>
+                </div>
               </md-table-cell>
               <md-table-cell md-label="Остаток">
-                <div>{{ item.remain }}, л.</div>
+                <div>
+                  <b>{{ item.remain }}, л.</b>
+                </div>
               </md-table-cell>
               <md-table-cell md-label="Будет пуст через">
                 <div v-if="item.elapsedTime > 0">
-                  {{ item.elapsedTime }}, ч. (~ {{ item.AVGHourlySell }}, л./ч.)
+                  <b
+                    >{{ item.elapsedTime }}, ч. (~ {{ item.AVGHourlySell }},
+                    л./ч.)</b
+                  >
                 </div>
                 <div v-else>Ошибка</div>
               </md-table-cell>
               <md-table-cell md-label="Ошибки">
                 <div class="my-col">
-                  <div v-if="item.data.errorCode == 3">нет воды</div>
-                  <div v-if="item.data.errorCode == 4">засор</div>
-                  <div v-if="item.data.errorCode == 15">АПВ замёрз</div>
-                  <div v-if="item.data.errorCode == 18">нет 220В в АПВ</div>
-                  <div v-if="item.online == false">нет связи с АПВ</div>
+                  <div v-if="item.data.errorCode == 3"><b>нет воды</b></div>
+                  <div v-if="item.data.errorCode == 4"><b>засор</b></div>
+                  <div v-if="item.data.errorCode == 15"><b>АПВ замёрз</b></div>
+                  <div v-if="item.data.errorCode == 18">
+                    <b>нет 220В в АПВ</b>
+                  </div>
+                  <div v-if="item.online == false"><b>нет связи с АПВ</b></div>
                 </div>
               </md-table-cell>
             </md-table-row>

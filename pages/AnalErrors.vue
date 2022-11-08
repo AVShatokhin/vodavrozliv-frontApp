@@ -156,8 +156,8 @@ export default {
         apvs: [],
         errors: [],
         devices: [],
-        errorDateFrom: Math.round(new Date().getTime()),
-        errorDateTo: Math.round(new Date().getTime()),
+        errorDateFrom: 0,
+        errorDateTo: 0,
       },
 
       exportFileName: "",
@@ -294,12 +294,7 @@ export default {
       );
     },
   },
-  mounted() {
-    let dateFrom = new Date();
-    dateFrom.setMonth(dateFrom.getMonth() - 1);
-    this.requestData.errorDateFrom = Math.round(dateFrom.getTime());
-    this.load();
-  },
+  mounted() {},
 
   watch: {
     perPage() {

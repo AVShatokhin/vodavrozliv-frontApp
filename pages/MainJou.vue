@@ -200,9 +200,7 @@ export default {
       );
     },
   },
-  mounted() {
-    this.load();
-  },
+  mounted() {},
 
   watch: {
     perPage() {

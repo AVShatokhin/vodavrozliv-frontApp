@@ -4,7 +4,7 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>manage_history</md-icon>
+            <md-icon>account_balance</md-icon>
           </div>
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
@@ -15,9 +15,9 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>manage_history</md-icon>
+            <md-icon>account_balance</md-icon>
           </div>
-          <h4 class="title">Бесплатные раздачи</h4>
+          <h4 class="title">Отчет</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
@@ -49,6 +49,7 @@
         </div>
 
         <md-card-content>
+          <pod-itog :data="podItog"></pod-itog>
           <md-table
             :value="model"
             class="paginated-table table-striped table-hover"
@@ -70,19 +71,26 @@
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
+              <md-table-cell md-label="Дата">
+                <date-card :item="item"></date-card>
+              </md-table-cell>
+
               <md-table-cell md-label="Реквизиты терминала">
                 <terminal-card :item="item"></terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Отсечки"
-                ><free-date-card :item="item"></free-date-card
-              ></md-table-cell>
-              <md-table-cell md-label="Длительность"
-                ><long-card :item="item"></long-card
-              ></md-table-cell>
-
-              <md-table-cell md-label="Объём">
-                <value-card :item="item"></value-card>
+              <md-table-cell md-label="Наличные">
+                <b>{{ item.nal }}</b>
               </md-table-cell>
+              <md-table-cell md-label="Эквайринг">
+                <b>{{ item.eq }}</b>
+              </md-table-cell>
+              <md-table-cell md-label="Тара">
+                <b>{{ item.tSOLD }}</b>
+              </md-table-cell>
+              <md-table-cell md-label="Вода">
+                <b>{{ item.w }}</b>
+              </md-table-cell>
+              <md-table-cell md-label=""></md-table-cell>
             </md-table-row>
           </md-table>
         </md-card-content>
@@ -108,20 +116,18 @@
 
 <script>
 import { Pagination } from "@/components";
-import FilterCard from "../components/AnalFreeWater/FilterCard.vue";
-import TerminalCard from "../components/AnalFreeWater/TerminalCard.vue";
-import FreeDateCard from "../components/AnalFreeWater/FreeDateCard.vue";
-import ValueCard from "../components/AnalFreeWater/ValueCard.vue";
-import LongCard from "../components/AnalFreeWater/LongCard.vue";
+import FilterCard from "../components/BuhReport/FilterCard.vue";
+import TerminalCard from "../components/BuhReport/TerminalCard.vue";
+import DateCard from "../components/BuhReport/DateCard.vue";
+import PodItog from "../components/BuhReport/PodItog.vue";
 
 export default {
   components: {
     Pagination,
     FilterCard,
     TerminalCard,
-    FreeDateCard,
-    ValueCard,
-    LongCard,
+    DateCard,
+    PodItog,
   },
   computed: {
     to() {
@@ -150,19 +156,22 @@ export default {
 
       requestData: {
         apvs: [],
-        freeDateFrom: Math.round(new Date().getTime()),
-        freeDateTo: Math.round(new Date().getTime()),
+        dateFrom: 0,
+        dateTo: 0,
       },
+
+      podItog: {},
 
       exportFileName: "",
       json_fields: {
         "#": "index",
         SN: "sn",
         Адрес: "address",
-        "Начало периода": "startLts",
-        "Окончание периода": "stopLts",
-        "Длительность периода": "long",
-        Объём: "f",
+        Дата: "date",
+        Наличные: "nal",
+        Эквайринг: "eq",
+        Тара: "tSOLD",
+        Вода: "w",
       },
     };
   },
@@ -172,35 +181,35 @@ export default {
       this.load();
     },
     async fetchData() {
-      let latency = (__time) => {
-        let __days = Math.trunc(__time / (24 * 3600));
-        let __hours = Math.trunc((__time - __days * 24 * 3600) / 3600);
-        let __mins = Math.trunc(
-          (__time - __days * 24 * 3600 - __hours * 3600) / 60
-        );
+      // let latency = (__time) => {
+      //   let __days = Math.trunc(__time / (24 * 3600));
+      //   let __hours = Math.trunc((__time - __days * 24 * 3600) / 3600);
+      //   let __mins = Math.trunc(
+      //     (__time - __days * 24 * 3600 - __hours * 3600) / 60
+      //   );
 
-        if (__time == 0) {
-          return "Актуально!";
-        }
+      //   if (__time == 0) {
+      //     return "Актуально!";
+      //   }
 
-        if (__time < 3600) {
-          return Math.trunc(__time / 60) + " мин.";
-        }
+      //   if (__time < 3600) {
+      //     return Math.trunc(__time / 60) + " мин.";
+      //   }
 
-        if (__time > 7 * 24 * 3600) {
-          return Math.trunc(__time / (7 * 24 * 3600)) + " нед.";
-        }
+      //   if (__time > 7 * 24 * 3600) {
+      //     return Math.trunc(__time / (7 * 24 * 3600)) + " нед.";
+      //   }
 
-        if (__time > 24 * 3600) {
-          return `${__days} д. ${__hours} ч. ${__mins} мин.`;
-        }
+      //   if (__time > 24 * 3600) {
+      //     return `${__days} д. ${__hours} ч. ${__mins} мин.`;
+      //   }
 
-        if (__time >= 3600) {
-          return `${__hours} ч. ${__mins} мин.`;
-        }
+      //   if (__time >= 3600) {
+      //     return `${__hours} ч. ${__mins} мин.`;
+      //   }
 
-        return "";
-      };
+      //   return "";
+      // };
 
       let norm = (n) => {
         return n > 9 ? n : "0" + n;
@@ -215,16 +224,10 @@ export default {
           1 + __date.getMonth() > 9
             ? 1 + __date.getMonth()
             : "0" + (1 + __date.getMonth())
-        }-${norm(__date.getDate())} ${norm(__date.getHours())}:${norm(
-          __date.getMinutes()
-        )}:${norm(__date.getSeconds())}`;
+        }-${norm(__date.getDate())}`;
       };
 
       let FILE_NAME = (name) => {
-        let norm = (n) => {
-          return n > 9 ? n : "0" + n;
-        };
-
         let __date = new Date();
 
         return (
@@ -239,39 +242,32 @@ export default {
         );
       };
 
-      this.exportFileName = FILE_NAME("free_water");
+      this.exportFileName = FILE_NAME("report");
 
       let __result = [];
 
       await this.ajax.asyncGet(
         this,
-        "getFreeWater",
+        "getBuhReport",
         {
           perPage: -1,
           currentPage: 0,
-          requestData: this.requestData,
           loadXML: true,
+          requestData: this.requestData,
         },
         (r) => {
           if (r.status == "ok") {
+            // console.log(r.data.items);
             r.data.items.forEach((item, index) => {
               __result.push({
                 index: index + 1,
                 sn: item.sn,
+                date: FROM_DATE(item.date),
                 address: item.address,
-                startLts:
-                  item.startLts != item.startLts
-                    ? "Актуально"
-                    : FROM_DATE(item.startLts),
-                stopLts:
-                  item.startLts == item.stopLts
-                    ? "Актуально"
-                    : FROM_DATE(item.stopLts),
-                long:
-                  item.startLts == item.stopLts
-                    ? "Актуально"
-                    : latency(item.long),
-                f: item.f,
+                nal: item.nal,
+                eq: item.eq,
+                tSOLD: item.tSOLD,
+                w: item.w,
               });
             });
           } else {
@@ -288,7 +284,7 @@ export default {
     load() {
       this.ajax.get(
         this,
-        "getFreeWater",
+        "getBuhReport",
         {
           perPage: this.perPage,
           currentPage: this.currentPage - 1,
@@ -298,13 +294,14 @@ export default {
           if (r.status == "ok") {
             this.model = [];
             this.model = r.data.items;
+            this.podItog = r.data.podItog;
             this.queryLength = r.data.queryLength;
           } else {
             this.showErrorNotify(this, r);
           }
         },
         (err) => {
-          //console.log(err);
+          this.showErrorNotify(this, err);
         }
       );
     },

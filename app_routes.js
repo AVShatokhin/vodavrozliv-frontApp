@@ -16,6 +16,8 @@ import CashierTotals from "@/app/pages/CashierTotals.vue";
 import AnalErrors from "@/app/pages/AnalErrors.vue";
 import AnalInkass from "@/app/pages/AnalInkass.vue";
 import AnalFreeWater from "@/app/pages/AnalFreeWater.vue";
+import BuhReport from "@/app/pages/BuhReport.vue";
+import BuhActual from "@/app/pages/BuhActual.vue";
 
 export default [
   {
@@ -81,7 +83,7 @@ export default [
   {
     path: "/CashierInkass",
     component: CashierInkass,
-    name: `Инкассации`,
+    name: `Инкассации кассира`,
   },
   {
     path: "/CashierTotals",
@@ -102,5 +104,15 @@ export default [
     path: "/AnalFreeWater",
     component: AnalFreeWater,
     name: `Раздача воды`,
+  },
+  {
+    path: "/BuhReport",
+    component: BuhReport,
+    name: `Отчёт`,
+  },
+  {
+    path: "/BuhActual",
+    component: BuhActual,
+    name: `Актуальные данные`,
   },
 ];

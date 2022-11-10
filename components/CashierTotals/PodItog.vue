@@ -215,7 +215,19 @@ export default {
   },
   data() {
     return {
-      requestData: { dateCreationFrom: this.from, dateCreationTo: this.to },
+      showDialog: false,
+      fm1: 0,
+      fm2: 0,
+      fm5: 0,
+      fm10: 0,
+      fk: 0,
+      rm1: 0,
+      rm2: 0,
+      rm5: 0,
+      rm10: 0,
+      rk: 0,
+
+      requestData: { dateCreationFrom: 0, dateCreationTo: 0 },
       exportFileName: "",
       json_fields: {
         "#": "index",
@@ -229,17 +241,6 @@ export default {
         K: "k",
         SUMM: "summ",
       },
-      showDialog: false,
-      fm1: 0,
-      fm2: 0,
-      fm5: 0,
-      fm10: 0,
-      fk: 0,
-      rm1: 0,
-      rm2: 0,
-      rm5: 0,
-      rm10: 0,
-      rk: 0,
     };
   },
   methods: {
@@ -250,7 +251,26 @@ export default {
       }
     },
     async fetchData() {
-      this.exportFileName = "itog.xls";
+      let FILE_NAME = (name) => {
+        let norm = (n) => {
+          return n > 9 ? n : "0" + n;
+        };
+
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("itog");
 
       let __result = [];
 
@@ -394,10 +414,10 @@ export default {
   mounted() {},
   watch: {
     from(newValue) {
-      requestData.dateCreationFrom = newValue;
+      this.requestData.dateCreationFrom = newValue;
     },
     to(newValue) {
-      requestData.dateCreationTo = newValue;
+      this.requestData.dateCreationTo = newValue;
     },
   },
   computed: {},

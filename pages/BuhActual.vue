@@ -4,7 +4,7 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>manage_history</md-icon>
+            <md-icon>account_balance</md-icon>
           </div>
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
@@ -15,9 +15,9 @@
       <md-card>
         <md-card-header class="md-card-header-icon md-card-header-green">
           <div class="card-icon">
-            <md-icon>manage_history</md-icon>
+            <md-icon>account_balance</md-icon>
           </div>
-          <h4 class="title">Бесплатные раздачи</h4>
+          <h4 class="title">Актуальные данные</h4>
         </md-card-header>
 
         <div class="my-row" md-alignment="space-between">
@@ -73,16 +73,17 @@
               <md-table-cell md-label="Реквизиты терминала">
                 <terminal-card :item="item"></terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Отсечки"
-                ><free-date-card :item="item"></free-date-card
-              ></md-table-cell>
-              <md-table-cell md-label="Длительность"
-                ><long-card :item="item"></long-card
-              ></md-table-cell>
-
-              <md-table-cell md-label="Объём">
-                <value-card :item="item"></value-card>
+              <md-table-cell md-label="Эквайринг"
+                ><b>{{ item.value.r }}</b></md-table-cell
+              >
+              <md-table-cell md-label="Наличные"
+                ><b>{{ calcNal(item.value) }}</b></md-table-cell
+              >
+              <md-table-cell md-label="Отсечки">
+                <date-card :item="item"></date-card>
               </md-table-cell>
+
+              <md-table-cell md-label=""></md-table-cell>
             </md-table-row>
           </md-table>
         </md-card-content>
@@ -108,20 +109,16 @@
 
 <script>
 import { Pagination } from "@/components";
-import FilterCard from "../components/AnalFreeWater/FilterCard.vue";
-import TerminalCard from "../components/AnalFreeWater/TerminalCard.vue";
-import FreeDateCard from "../components/AnalFreeWater/FreeDateCard.vue";
-import ValueCard from "../components/AnalFreeWater/ValueCard.vue";
-import LongCard from "../components/AnalFreeWater/LongCard.vue";
+import FilterCard from "../components/BuhActual/FilterCard.vue";
+import TerminalCard from "../components/BuhActual/TerminalCard.vue";
+import DateCard from "../components/BuhActual/DateCard.vue";
 
 export default {
   components: {
     Pagination,
     FilterCard,
     TerminalCard,
-    FreeDateCard,
-    ValueCard,
-    LongCard,
+    DateCard,
   },
   computed: {
     to() {
@@ -150,19 +147,19 @@ export default {
 
       requestData: {
         apvs: [],
-        freeDateFrom: Math.round(new Date().getTime()),
-        freeDateTo: Math.round(new Date().getTime()),
+        dateFrom: 0,
+        dateTo: 0,
       },
 
       exportFileName: "",
       json_fields: {
         "#": "index",
         SN: "sn",
-        Адрес: "address",
-        "Начало периода": "startLts",
-        "Окончание периода": "stopLts",
-        "Длительность периода": "long",
-        Объём: "f",
+        Address: "address",
+        "Последнее обновление данных": "lts",
+        "Дата инкассации": "inkassLts",
+        Наличные: "nal",
+        Эквайринг: "eq",
       },
     };
   },
@@ -172,35 +169,35 @@ export default {
       this.load();
     },
     async fetchData() {
-      let latency = (__time) => {
-        let __days = Math.trunc(__time / (24 * 3600));
-        let __hours = Math.trunc((__time - __days * 24 * 3600) / 3600);
-        let __mins = Math.trunc(
-          (__time - __days * 24 * 3600 - __hours * 3600) / 60
-        );
+      // let latency = (__time) => {
+      //   let __days = Math.trunc(__time / (24 * 3600));
+      //   let __hours = Math.trunc((__time - __days * 24 * 3600) / 3600);
+      //   let __mins = Math.trunc(
+      //     (__time - __days * 24 * 3600 - __hours * 3600) / 60
+      //   );
 
-        if (__time == 0) {
-          return "Актуально!";
-        }
+      //   if (__time == 0) {
+      //     return "Актуально!";
+      //   }
 
-        if (__time < 3600) {
-          return Math.trunc(__time / 60) + " мин.";
-        }
+      //   if (__time < 3600) {
+      //     return Math.trunc(__time / 60) + " мин.";
+      //   }
 
-        if (__time > 7 * 24 * 3600) {
-          return Math.trunc(__time / (7 * 24 * 3600)) + " нед.";
-        }
+      //   if (__time > 7 * 24 * 3600) {
+      //     return Math.trunc(__time / (7 * 24 * 3600)) + " нед.";
+      //   }
 
-        if (__time > 24 * 3600) {
-          return `${__days} д. ${__hours} ч. ${__mins} мин.`;
-        }
+      //   if (__time > 24 * 3600) {
+      //     return `${__days} д. ${__hours} ч. ${__mins} мин.`;
+      //   }
 
-        if (__time >= 3600) {
-          return `${__hours} ч. ${__mins} мин.`;
-        }
+      //   if (__time >= 3600) {
+      //     return `${__hours} ч. ${__mins} мин.`;
+      //   }
 
-        return "";
-      };
+      //   return "";
+      // };
 
       let norm = (n) => {
         return n > 9 ? n : "0" + n;
@@ -221,10 +218,6 @@ export default {
       };
 
       let FILE_NAME = (name) => {
-        let norm = (n) => {
-          return n > 9 ? n : "0" + n;
-        };
-
         let __date = new Date();
 
         return (
@@ -239,18 +232,18 @@ export default {
         );
       };
 
-      this.exportFileName = FILE_NAME("free_water");
+      this.exportFileName = FILE_NAME("actual");
 
       let __result = [];
 
       await this.ajax.asyncGet(
         this,
-        "getFreeWater",
+        "getBuhActual",
         {
           perPage: -1,
           currentPage: 0,
-          requestData: this.requestData,
           loadXML: true,
+          requestData: this.requestData,
         },
         (r) => {
           if (r.status == "ok") {
@@ -259,19 +252,10 @@ export default {
                 index: index + 1,
                 sn: item.sn,
                 address: item.address,
-                startLts:
-                  item.startLts != item.startLts
-                    ? "Актуально"
-                    : FROM_DATE(item.startLts),
-                stopLts:
-                  item.startLts == item.stopLts
-                    ? "Актуально"
-                    : FROM_DATE(item.stopLts),
-                long:
-                  item.startLts == item.stopLts
-                    ? "Актуально"
-                    : latency(item.long),
-                f: item.f,
+                nal: this.calcNal(item.value),
+                eq: item.value.r,
+                lts: FROM_DATE(item.lts),
+                inkassLts: FROM_DATE(item.inkassLts),
               });
             });
           } else {
@@ -288,7 +272,7 @@ export default {
     load() {
       this.ajax.get(
         this,
-        "getFreeWater",
+        "getBuhActual",
         {
           perPage: this.perPage,
           currentPage: this.currentPage - 1,
@@ -303,9 +287,16 @@ export default {
             this.showErrorNotify(this, r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
+      );
+    },
+    calcNal(value) {
+      return (
+        Number(value.k || 0) +
+        Number(value.m1 || 0) +
+        2 * (value.m2 || 0) +
+        5 * (value.m5 || 0) +
+        10 * (value.m10 || 0)
       );
     },
   },

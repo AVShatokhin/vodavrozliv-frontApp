@@ -184,8 +184,8 @@ export default {
         sortType: 0,
         useInkassDate: false,
         useCreationDate: true,
-        dateCreationFrom: Math.round(new Date().getTime()),
-        dateCreationTo: Math.round(new Date().getTime()),
+        dateCreationFrom: 0,
+        dateCreationTo: 0,
         dateInkassFrom: 0,
         dateInkassTo: 0,
         apvs: [],
@@ -196,7 +196,8 @@ export default {
   },
   methods: {
     sendRequest(requestData) {
-      this.requestData = requestData;
+      this.requestData.dateCreationFrom = requestData.dateCreationFrom;
+      this.requestData.dateCreationTo = requestData.dateCreationTo;
       this.load();
     },
 

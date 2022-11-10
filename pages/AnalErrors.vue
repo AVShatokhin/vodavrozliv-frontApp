@@ -230,7 +230,26 @@ export default {
         )}:${norm(__date.getSeconds())}`;
       };
 
-      this.exportFileName = "errors.xls";
+      let FILE_NAME = (name) => {
+        let norm = (n) => {
+          return n > 9 ? n : "0" + n;
+        };
+
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("errors");
 
       let __result = [];
 

@@ -12,7 +12,7 @@ let control = {
     {
       name: "Запрос инкассаций",
       path: "/CmdsInkas",
-      roles: ["ACCOUNTANT"],
+      roles: ["ANALYST"],
     },
   ],
 };
@@ -24,17 +24,17 @@ let lists = {
     {
       name: "Аппараты",
       path: "/APVList",
-      roles: ["HEAD_OP_DEP", "DEPUTY"],
+      roles: ["HEAD_OP_DEP", "ANALYST"],
     },
     {
       name: "Бригады",
       path: "/BRIGList",
-      roles: ["HEAD_OP_DEP", "DEPUTY"],
+      roles: ["HEAD_OP_DEP", "ANALYST"],
     },
     {
       name: "Круги",
       path: "/KRUGList",
-      roles: ["HEAD_OP_DEP", "DEPUTY"],
+      roles: ["HEAD_OP_DEP", "ANALYST"],
     },
   ],
 };
@@ -58,12 +58,12 @@ let jou = {
     {
       name: "Основной журнал",
       path: "/MainJou",
-      roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
+      roles: ["ANALYST", "HEAD_OP_DEP"],
     },
     {
       name: "Журнал инкассаций",
       path: "/InkasJou",
-      roles: ["ANALYST", "ACCOUNTANT", "DEPUTY", "CASHIER"],
+      roles: ["ANALYST"],
     },
   ],
 };
@@ -75,12 +75,12 @@ let dispatcher = {
     {
       name: "Сводная таблица",
       path: "/DispatcherTable",
-      roles: ["DISPATCHER"],
+      roles: ["DISPATCHER", "HEAD_OP_DEP"],
     },
     {
       name: "Расписание моек",
       path: "/DispatcherWash",
-      roles: ["DISPATCHER"],
+      roles: ["DISPATCHER", "HEAD_OP_DEP"],
     },
   ],
 };
@@ -97,17 +97,17 @@ let analyst = {
     {
       name: "Средние продажи",
       path: "/AnalDaylySell",
-      roles: ["ANALYST"],
+      roles: ["ANALYST", "DISPATCHER", "ACCOUNTANT"],
     },
     {
       name: "Неисправности",
       path: "/AnalErrors",
-      roles: ["ANALYST"],
+      roles: ["ANALYST", "HEAD_OP_DEP"],
     },
     {
       name: "Раздача воды",
       path: "/AnalFreeWater",
-      roles: ["ANALYST"],
+      roles: ["ANALYST", "DISPATCHER", "ACCOUNTANT", "HEAD_OP_DEP"],
     },
   ],
 };
@@ -129,7 +129,33 @@ let cashier = {
   ],
 };
 
-let dirs = [analyst, cashier, dispatcher, control, jou, lists, options];
+let accountant = {
+  icon: "account_balance",
+  name: "Бухгалтерия",
+  items: [
+    {
+      name: "Отчет",
+      path: "/BuhReport",
+      roles: ["ACCOUNTANT"],
+    },
+    {
+      name: "Актуальные данные",
+      path: "/BuhActual",
+      roles: ["ACCOUNTANT"],
+    },
+  ],
+};
+
+let dirs = [
+  analyst,
+  accountant,
+  cashier,
+  dispatcher,
+  control,
+  jou,
+  lists,
+  options,
+];
 
 let items = [];
 

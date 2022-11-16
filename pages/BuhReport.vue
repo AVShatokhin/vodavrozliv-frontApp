@@ -71,9 +71,9 @@
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Дата">
+              <!-- <md-table-cell md-label="Дата">
                 <date-card :item="item"></date-card>
-              </md-table-cell>
+              </md-table-cell> -->
 
               <md-table-cell md-label="Реквизиты терминала">
                 <terminal-card :item="item"></terminal-card>
@@ -118,7 +118,7 @@
 import { Pagination } from "@/components";
 import FilterCard from "../components/BuhReport/FilterCard.vue";
 import TerminalCard from "../components/BuhReport/TerminalCard.vue";
-import DateCard from "../components/BuhReport/DateCard.vue";
+// import DateCard from "../components/BuhReport/DateCard.vue";
 import PodItog from "../components/BuhReport/PodItog.vue";
 
 export default {
@@ -126,7 +126,7 @@ export default {
     Pagination,
     FilterCard,
     TerminalCard,
-    DateCard,
+    // DateCard,
     PodItog,
   },
   computed: {
@@ -167,7 +167,7 @@ export default {
         "#": "index",
         SN: "sn",
         Адрес: "address",
-        Дата: "date",
+        // Дата: "date",
         Наличные: "nal",
         Эквайринг: "eq",
         Тара: "tSOLD",
@@ -262,7 +262,7 @@ export default {
               __result.push({
                 index: index + 1,
                 sn: item.sn,
-                date: FROM_DATE(item.date),
+                // date: FROM_DATE(item.date),
                 address: item.address,
                 nal: item.nal,
                 eq: item.eq,

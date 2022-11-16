@@ -25,10 +25,7 @@
             <md-button
               style="width: 230px; height: 41px; margin-right: 15px"
               class="md-success button__refresh"
-              @click="
-                showAddDialog = true;
-                dontUseSn__ = false;
-              "
+              @click="initAddInkassDialog()"
             >
               <span class="material-icons"> add_circle_outline </span>
               добавить инкассацию
@@ -296,6 +293,11 @@ export default {
     };
   },
   methods: {
+    initAddInkassDialog() {
+      this.showAddDialog = true;
+      this.dontUseSn__ = false;
+      this.sn__ = "N";
+    },
     clearAddInkassDialog() {
       this.dontUseSn__ = false;
       this.m1__ = 0;

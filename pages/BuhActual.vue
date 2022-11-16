@@ -73,11 +73,11 @@
               <md-table-cell md-label="Реквизиты терминала">
                 <terminal-card :item="item"></terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Эквайринг"
-                ><b>{{ item.value.r }}</b></md-table-cell
-              >
+              <md-table-cell md-label="Эквайринг">
+                <b>{{ calcEq(item) }}</b>
+              </md-table-cell>
               <md-table-cell md-label="Наличные"
-                ><b>{{ calcNal(item.value) }}</b></md-table-cell
+                ><b>{{ calcNal(item) }}</b></md-table-cell
               >
               <md-table-cell md-label="Отсечки">
                 <date-card :item="item"></date-card>
@@ -252,8 +252,8 @@ export default {
                 index: index + 1,
                 sn: item.sn,
                 address: item.address,
-                nal: this.calcNal(item.value),
-                eq: item.value.r,
+                nal: this.calcNal(item),
+                eq: this.calcEq(item),
                 lts: FROM_DATE(item.lts),
                 inkassLts: FROM_DATE(item.inkassLts),
               });
@@ -290,14 +290,12 @@ export default {
         (err) => {}
       );
     },
-    calcNal(value) {
-      return (
-        Number(value.k || 0) +
-        Number(value.m1 || 0) +
-        2 * (value.m2 || 0) +
-        5 * (value.m5 || 0) +
-        10 * (value.m10 || 0)
-      );
+    calcNal(item) {
+      if (item?.value == null) return 0;
+      return Number(item.value?.k || 0) + Number(item.value?.m || 0);
+    },
+    calcEq(item) {
+      return item?.value?.r || 0;
     },
   },
   mounted() {},

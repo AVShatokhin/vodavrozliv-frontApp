@@ -25,6 +25,18 @@
             <p class="card-category">
               Показано с {{ from + 1 }} по {{ to }} из {{ queryLength }} записей
             </p>
+
+            <p class="card-category p__padding">XML</p>
+            <p class="card-category">
+              <export-excel
+                :fields="json_fields"
+                :fetch="fetchData"
+                worksheet="CRM.Vodavrozliv"
+                :name="exportFileName"
+              >
+                <span class="material-icons pointer"> file_download </span>
+              </export-excel>
+            </p>
           </div>
 
           <pagination
@@ -142,6 +154,12 @@ export default {
       },
 
       apvs: {},
+
+      exportFileName: "",
+      json_fields: {
+        Дата: "date",
+        "Список АПВ": "sns",
+      },
     };
   },
   methods: {
@@ -149,6 +167,74 @@ export default {
       this.requestData.dateFrom = data.dateFrom;
       this.requestData.dateTo = data.dateTo;
       this.load();
+    },
+    async fetchData() {
+      let norm = (n) => {
+        return n > 9 ? n : "0" + n;
+      };
+
+      let FROM_DATE = (date) => {
+        if (date == null) return;
+
+        let __date = new Date(date);
+
+        return `${1900 + __date.getYear()}-${
+          1 + __date.getMonth() > 9
+            ? 1 + __date.getMonth()
+            : "0" + (1 + __date.getMonth())
+        }-${norm(__date.getDate())}`;
+      };
+
+      let FILE_NAME = (name) => {
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("wash");
+
+      let __result = [];
+
+      console.log(this.requestData);
+
+      await this.ajax.asyncGet(
+        this,
+        "getWash",
+        {
+          perPage: -1,
+          currentPage: 0,
+          loadXML: true,
+          requestData: this.requestData,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            r.data.items.forEach((item) => {
+              if (item?.washObject) {
+                __result.push({
+                  sns: Object.keys(item.washObject).join(", "),
+                  date: FROM_DATE(item.date),
+                });
+              }
+            });
+          } else {
+            this.showErrorNotify(this, r);
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+
+      return __result;
     },
     load() {
       this.ajax.get(
@@ -199,5 +285,17 @@ export default {
   flex-wrap: wrap;
   align-content: flex-start;
   height: 100%;
+}
+
+.p__padding {
+  padding-left: 30px;
+  font-weight: bold;
+  color: rgb(60, 73, 192);
+}
+
+.pointer {
+  cursor: pointer;
+  padding-left: 5px;
+  color: rgb(60, 73, 192);
 }
 </style>

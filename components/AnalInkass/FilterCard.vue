@@ -154,7 +154,11 @@ export default {
     this.load();
     this.$emit("sendRequest", this.requestData);
   },
-  watch: {},
+  watch: {
+    useDate(value) {
+      this.$emit("changedUseDate", this.useDate);
+    },
+  },
   computed: {},
 };
 </script>

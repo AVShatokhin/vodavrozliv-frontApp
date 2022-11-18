@@ -204,8 +204,6 @@ export default {
 
       let __result = [];
 
-      console.log(this.requestData);
-
       await this.ajax.asyncGet(
         this,
         "getWash",
@@ -230,7 +228,7 @@ export default {
           }
         },
         (err) => {
-          console.log(err);
+          // console.log(err);
         }
       );
 

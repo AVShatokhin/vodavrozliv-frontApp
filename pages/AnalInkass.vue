@@ -9,7 +9,10 @@
           <h4 class="title">Настройки выборки</h4>
         </md-card-header>
 
-        <filter-card @sendRequest="sendRequest"></filter-card>
+        <filter-card
+          @sendRequest="sendRequest"
+          @changedUseDate="changedUseDate"
+        ></filter-card>
       </md-card>
 
       <md-card>
@@ -50,6 +53,19 @@
                 <export-excel
                   :fields="json_fields"
                   :fetch="fetchData"
+                  worksheet="CRM.Vodavrozliv"
+                  :name="exportFileName"
+                >
+                  <span class="material-icons pointer"> file_download </span>
+                </export-excel>
+              </p>
+              <p class="card-category p__padding" v-if="checkUseDate">
+                XML с группировкой
+              </p>
+              <p class="card-category" v-if="checkUseDate">
+                <export-excel
+                  :fields="json_fields_group"
+                  :fetch="fetchDataGroup"
                   worksheet="CRM.Vodavrozliv"
                   :name="exportFileName"
                 >
@@ -181,6 +197,9 @@ export default {
     from() {
       return this.perPage * (this.currentPage - 1);
     },
+    checkUseDate() {
+      return this.requestData?.useDate == "creation";
+    },
   },
   data() {
     return {
@@ -232,9 +251,22 @@ export default {
         Безнал: "rd",
         Комментарий: "comment",
       },
+      json_fields_group: {
+        SN: "sn",
+        Адрес: "address",
+        "Мелочь кассира": "m_summ",
+        "Купюры кассира": "k",
+        "Сумма кассира": "cashierSumm",
+        "Сумма терминала": "terminalSumm",
+        Разница: "delta",
+        Безнал: "rd",
+      },
     };
   },
   methods: {
+    changedUseDate(value) {
+      this.requestData.useDate = value;
+    },
     prihodAll() {
       this.ajax.post(
         this,
@@ -255,6 +287,88 @@ export default {
     sendRequest(requestData) {
       this.requestData = requestData;
       this.load();
+    },
+
+    async fetchDataGroup() {
+      let FILE_NAME = (name) => {
+        let norm = (n) => {
+          return n > 9 ? n : "0" + n;
+        };
+
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("inkass_group");
+
+      let __result = {};
+
+      await this.ajax.asyncGet(
+        this,
+        "getAnalByCreation",
+        {
+          perPage: this.perPage,
+          currentPage: this.currentPage - 1,
+          requestData: this.requestData,
+          loadXML: true,
+        },
+        (r) => {
+          // let FROM_DATE = (date) => {
+          //   if (date == null) return;
+
+          //   let __date = new Date(date);
+
+          //   return `${1900 + __date.getYear()}-${
+          //     1 + __date.getMonth() > 9
+          //       ? 1 + __date.getMonth()
+          //       : "0" + (1 + __date.getMonth())
+          //   }-${
+          //     __date.getDate() > 9 ? __date.getDate() : "0" + __date.getDate()
+          //   }`;
+          // };
+
+          if (r.status == "ok") {
+            r.data.items.forEach((e) => {
+              if (!e.isPrihod) return;
+              if (__result?.[e.sn] == null) {
+                __result[e.sn] = {
+                  sn: e.sn,
+                  address: e.address,
+                  m_summ: e.m1 + 2 * e.m2 + 5 * e.m5 + 10 * e.m10,
+                  k: e.k,
+                  cashierSumm: e.cashierSumm || 0,
+                  terminalSumm: e?.terminalSumm || 0,
+                  delta: e.delta,
+                  rd: e.rd || 0,
+                };
+              } else {
+                __result[e.sn].m_summ +=
+                  e.m1 + 2 * e.m2 + 5 * e.m5 + 10 * e.m10;
+                __result[e.sn].k += e.k;
+                __result[e.sn].cashierSumm += e.cashierSumm;
+                __result[e.sn].terminalSumm += e?.terminalSumm || 0;
+                __result[e.sn].delta += e.delta;
+                __result[e.sn].rd += e?.rd || 0;
+              }
+            });
+          } else {
+            this.showErrorNotify(this, r);
+          }
+        },
+        (err) => {}
+      );
+
+      return Object.values(__result);
     },
 
     async fetchData() {

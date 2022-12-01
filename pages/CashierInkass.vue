@@ -252,7 +252,7 @@ export default {
       return this.perPage * (this.currentPage - 1);
     },
     money() {
-      return this.m10__ * 10 + this.m5__ * 5 + this.m2__ * 2 + this.m1__;
+      return this.m10__ * 10 + this.m5__ * 5 + this.m2__ * 2 + this.m1__ * 1;
     },
   },
   data() {

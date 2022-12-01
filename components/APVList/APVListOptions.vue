@@ -48,6 +48,7 @@
           </b>
         </div>
       </div>
+      <div class="my-row">chat_id : {{ chat_id }}</div>
     </div>
 
     <div class="my-user-item-container">
@@ -129,6 +130,7 @@ export default {
       address__: "",
       tgLink__: "",
       snEQ__: "",
+      chat_id: "",
     };
   },
   methods: {
@@ -146,6 +148,7 @@ export default {
         },
         (r) => {
           if (r.status == "ok") {
+            this.chat_id = r.chat_id;
             this.showSuccessNotify(this, {
               title: "OK",
               message: "Проверка прошла успешно!",

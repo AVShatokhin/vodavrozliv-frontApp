@@ -86,6 +86,23 @@
                   <b>Продано: {{ item.data.v2 }}, л.</b>
                 </div>
               </md-table-cell>
+              <md-table-cell md-label="Датчики">
+                <div>
+                  <b>Нет воды: {{ item.data.dv1 }}</b>
+                </div>
+                <div>
+                  <b>750 л.: {{ item.data.dv2 }}</b>
+                </div>
+                <div>
+                  <b>1500 л.: {{ item.data.dv3 }}</b>
+                </div>
+                <div>
+                  <b>3000 л.: {{ item.data.dv4 }}</b>
+                </div>
+                <div>
+                  <b>4500 л.: {{ item.data.dv5 }}</b>
+                </div>
+              </md-table-cell>
               <md-table-cell md-label="Остаток">
                 <div>
                   <b>{{ item.remain }}, л.</b>

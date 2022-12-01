@@ -68,9 +68,7 @@ export default {
             this.showErrorNotify(r);
           }
         },
-        (err) => {
-          //console.log(err);
-        }
+        (err) => {}
       );
     },
   },

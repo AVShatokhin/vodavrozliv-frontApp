@@ -178,6 +178,11 @@
             </div>
             <div class="div__addinkass_col">
               <md-field>
+                <label>Сумма купюрами, руб.</label>
+                <md-input v-model="k__" type="text"></md-input>
+              </md-field>
+
+              <md-field>
                 <label>1 руб., шт.</label>
                 <md-input v-model="m1__" type="text"></md-input>
               </md-field>
@@ -193,10 +198,7 @@
                 <label>10 руб., шт.</label>
                 <md-input v-model="m10__" type="text"></md-input>
               </md-field>
-              <md-field>
-                <label>Сумма купюрами, руб.</label>
-                <md-input v-model="k__" type="text"></md-input>
-              </md-field>
+              <div>Сумма монетами {{ money }}, руб.</div>
             </div>
           </div>
         </div>
@@ -248,6 +250,9 @@ export default {
     },
     from() {
       return this.perPage * (this.currentPage - 1);
+    },
+    money() {
+      return this.m10__ * 10 + this.m5__ * 5 + this.m2__ * 2 + this.m1__;
     },
   },
   data() {

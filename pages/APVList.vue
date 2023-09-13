@@ -15,6 +15,7 @@
               Показано с {{ from + 1 }} по {{ to }} из {{ queryLength }} записей
             </p>
           </div>
+
           <pagination
             class="pagination-no-border pagination-success"
             v-model="currentPage"
@@ -24,6 +25,21 @@
           </pagination>
         </div>
 
+        <div class="my-row" md-alignment="space-between">
+          <div class="my-row">
+            <p class="card-category p__padding">XML</p>
+            <p class="card-category">
+              <export-excel
+                :fields="json_fields"
+                :fetch="fetchData"
+                worksheet="CRM.Vodavrozliv"
+                :name="exportFileName"
+              >
+                <span class="material-icons pointer"> file_download </span>
+              </export-excel>
+            </p>
+          </div>
+        </div>
         <md-card-content>
           <md-table
             :value="apvModelArray"
@@ -202,14 +218,29 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 50,
-      perPageOptions: [25, 50, 100],
+      perPage: 100,
+      perPageOptions: [25, 50, 100, 300],
       // pagination params
 
       searchQuery: "",
 
       krugsModel: [],
       krugsHash: {},
+
+      //requestData: { sortType: 0, apvs: [] },
+
+      exportFileName: "",
+      json_fields: {
+        sn: "sn",
+        Адрес: "address",
+        "TГ-ссылка": "tgLink",
+        "Последнеее обновление": "lts",
+        "Версия ПО": "version",
+        Оператор: "oper",
+        "Состояние соединения": "linkState",
+        Круг: "krug",
+        "Серийный номер эквайринга": "snEQ",
+      },
     };
   },
   methods: {
@@ -367,6 +398,69 @@ export default {
           )
         : [text];
     },
+    async fetchData() {
+      let FILE_NAME = (name) => {
+        let norm = (n) => {
+          return n > 9 ? n : "0" + n;
+        };
+
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("apv_list");
+
+      let __result = [];
+
+      await this.ajax.getAPV_XML(
+        this,
+        {
+          searchQuery: this.searchQuery,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            Object.keys(r.data.items).forEach((sn) => {
+              let __apv = r.data.items[sn];
+
+              let __krug;
+              if (__apv?.activeKrug == null) {
+                __krug = "не задан";
+              } else {
+                __krug = this.krugsHash[__apv?.activeKrug]?.title || "не задан";
+              }
+
+              __result.push({
+                sn: __apv.sn,
+                address: __apv.address,
+                tgLink: __apv.tgLink + ".",
+                snEQ: __apv.snEQ,
+                lts: this.formatTime(__apv.lts),
+                version: __apv.version,
+                oper: __apv.oper,
+                linkState: __apv.linkState,
+                krug: __krug,
+              });
+            });
+          } else {
+            this.showErrorNotify(r);
+          }
+        },
+        (err) => {
+          // console.log(err);
+        }
+      );
+      return __result;
+    },
   },
   mounted() {
     this.loadAPV();
@@ -407,10 +501,22 @@ export default {
   margin-left: 15px;
 }
 
+.p__padding {
+  padding-left: 30px;
+  font-weight: bold;
+  color: rgb(60, 73, 192);
+}
+
 .div__my-dialog-content {
   display: flex;
   flex-direction: column;
   padding: 15px;
   margin: 15px;
+}
+
+.pointer {
+  cursor: pointer;
+  padding-left: 5px;
+  color: rgb(60, 73, 192);
 }
 </style>

@@ -141,8 +141,8 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 50,
-      perPageOptions: [25, 50, 100],
+      perPage: 100,
+      perPageOptions: [25, 50, 100, 300],
       // pagination params
 
       requestData: {

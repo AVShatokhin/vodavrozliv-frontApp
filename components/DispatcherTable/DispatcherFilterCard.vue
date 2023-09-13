@@ -20,6 +20,21 @@
       </div>
     </div>
     <div class="my-row-actions">
+      <div class="my-row" md-alignment="space-between">
+        <div class="my-row">
+          <p class="card-category p__padding">XML</p>
+          <p class="card-category">
+            <export-excel
+              :fields="json_fields"
+              :fetch="fetchData"
+              worksheet="CRM.Vodavrozliv"
+              :name="exportFileName"
+            >
+              <span class="material-icons pointer"> file_download </span>
+            </export-excel>
+          </p>
+        </div>
+      </div>
       <md-button class="md-default buttons" @click="resetFilter()">
         <span class="material-icons"> close </span>
         Сбросить фильтр
@@ -52,9 +67,38 @@ export default {
 
       requestData: { sortType: 0, apvs: [] },
       resetFilterCmd: null,
+
+      exportFileName: "",
+      json_fields: {
+        sn: "sn",
+        Адрес: "address",
+        "Метка времени": "lts",
+        "Время заправки": "chargeInfo_lts",
+        "Объем заправки": "chargeInfo_v1",
+        "От датчика": "data_v1",
+        Продано: "data_v2",
+        "Нет воды": "data_dv1",
+        "750л": "data_dv2",
+        "1500л": "data_dv3",
+        "3000л": "data_dv4",
+        "4500л": "data_dv5",
+        Остаток: "remain",
+        "Будет пуст через": "elapsedTime",
+        Расход: "AVGHourlySell",
+        Ошибки: "errors",
+      },
     };
   },
   methods: {
+    renderError(item) {
+      let __error = [];
+      if (item.data.errorCode == 3) __error.push("нет воды");
+      if (item.data.errorCode == 4) __error.push("засор");
+      if (item.data.errorCode == 15) __error.push("АПВ замёрз");
+      if (item.data.errorCode == 18) __error.push("нет 220В в АПВ");
+      if (item.online == false) __error.push("нет связи с АПВ");
+      return __error.join(",");
+    },
     sendRequest() {
       this.requestData.sortType = this.sortType;
       this.$emit("sendRequest", this.requestData);
@@ -65,6 +109,67 @@ export default {
     },
     snArrayChanged(apvs) {
       this.requestData.apvs = apvs;
+    },
+    async fetchData() {
+      let FILE_NAME = (name) => {
+        let norm = (n) => {
+          return n > 9 ? n : "0" + n;
+        };
+
+        let __date = new Date();
+
+        return (
+          name +
+          `_${1900 + __date.getYear()}_${
+            1 + __date.getMonth() > 9
+              ? 1 + __date.getMonth()
+              : "0" + (1 + __date.getMonth())
+          }_${norm(__date.getDate())}_${norm(__date.getHours())}_${norm(
+            __date.getMinutes()
+          )}_${norm(__date.getSeconds())}.xls`
+        );
+      };
+
+      this.exportFileName = FILE_NAME("disp_table");
+
+      let __result = [];
+
+      await this.ajax.getDispatcherMain_XML(
+        this,
+        {
+          requestData: this.requestData,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            r.data.apvs.forEach((item) => {
+              __result.push({
+                sn: item.sn,
+                address: item.address,
+                lts: this.formatTime(item.lts),
+                chargeInfo_lts: this.formatTime(item.chargeInfo.lts),
+                chargeInfo_v1: item.chargeInfo.v1,
+                data_v1: item.data.v1,
+                data_v2: item.data.v2,
+                data_dv1: item.data.dv1,
+                data_dv2: item.data.dv2,
+                data_dv3: item.data.dv3,
+                data_dv4: item.data.dv4,
+                data_dv5: item.data.dv5,
+                remain: item.remain,
+                elapsedTime: item.elapsedTime,
+                AVGHourlySell: `${item.AVGHourlySell}`.replace("\.", ","),
+                errors: this.renderError(item),
+              });
+            });
+          } else {
+            this.showErrorNotify(r);
+          }
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
+      return __result;
     },
   },
   mounted() {},
@@ -110,5 +215,17 @@ export default {
 
 .material-icons {
   margin-right: 15px;
+}
+
+.pointer {
+  cursor: pointer;
+  padding-left: 5px;
+  color: rgb(60, 73, 192);
+}
+
+.p__padding {
+  padding-left: 30px;
+  font-weight: bold;
+  color: rgb(60, 73, 192);
 }
 </style>

@@ -57,38 +57,56 @@
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Реквизиты терминала">
+              <md-table-cell
+                md-label="Реквизиты терминала"
+                v-bind:class="redStyle(item)"
+              >
                 <simple-terminal-card :item="item"></simple-terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Метка времени">
+              <md-table-cell
+                md-label="Метка времени"
+                v-bind:class="redStyle(item)"
+              >
                 <main-jou-time-card :item="item"></main-jou-time-card>
               </md-table-cell>
-              <md-table-cell md-label="Сумма наличная">
+              <md-table-cell
+                md-label="Сумма наличная"
+                v-bind:class="redStyle(item)"
+              >
                 <main-jou-nal-summ-card :item="item"></main-jou-nal-summ-card>
               </md-table-cell>
-              <md-table-cell md-label="Купюры">
+              <md-table-cell md-label="Купюры" v-bind:class="redStyle(item)">
                 <main-jou-kup-card :item="item"></main-jou-kup-card>
               </md-table-cell>
-              <md-table-cell md-label="Монеты">
+              <md-table-cell md-label="Монеты" v-bind:class="redStyle(item)">
                 <main-jou-coin-card :item="item"></main-jou-coin-card>
               </md-table-cell>
-              <md-table-cell md-label="Эквайринг">
+              <md-table-cell md-label="Эквайринг" v-bind:class="redStyle(item)">
                 <main-jou-eq-card :item="item"></main-jou-eq-card>
               </md-table-cell>
-              <md-table-cell md-label="Температура">
+              <md-table-cell
+                md-label="Температура"
+                v-bind:class="redStyle(item)"
+              >
                 <main-jou-temp-card :item="item"></main-jou-temp-card>
               </md-table-cell>
-              <md-table-cell md-label="Датчики воды">
+              <md-table-cell
+                md-label="Датчики воды"
+                v-bind:class="redStyle(item)"
+              >
                 <main-jou-rashod-card :item="item"></main-jou-rashod-card>
               </md-table-cell>
-              <md-table-cell md-label="Бесплатная раздача">
+              <md-table-cell
+                md-label="Бесплатная раздача"
+                v-bind:class="redStyle(item)"
+              >
                 <main-jou-free-card :item="item"></main-jou-free-card>
               </md-table-cell>
-              <md-table-cell md-label="Тара">
+              <md-table-cell md-label="Тара" v-bind:class="redStyle(item)">
                 <main-jou-tara-card :item="item"></main-jou-tara-card>
               </md-table-cell>
 
-              <md-table-cell md-label="Ошибки">
+              <md-table-cell md-label="Ошибки" v-bind:class="redStyle(item)">
                 <main-jou-errors-card :item="item"></main-jou-errors-card>
               </md-table-cell>
             </md-table-row>
@@ -166,14 +184,32 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 50,
-      perPageOptions: [25, 50, 100],
+      perPage: 100,
+      perPageOptions: [25, 50, 100, 300],
       // pagination params
 
       requestData: {},
     };
   },
   methods: {
+    redStyle(item) {
+      let __messages = false;
+      let __errors = false;
+
+      if (item.messCode[0] != 0) {
+        __messages = true;
+      }
+      if (item.messCode.length > 1) {
+        __messages = true;
+      }
+      if (item.errorCode != 255) {
+        __errors = true;
+      }
+
+      if (__errors) return "red";
+      if (__messages) return "blue";
+      return "";
+    },
     sendRequest(requestData) {
       this.requestData = requestData;
       this.load();
@@ -214,6 +250,14 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.red {
+  background-color: red;
+}
+
+.blue {
+  background-color: yellow;
+}
+
 .my-row {
   display: flex;
   flex-direction: row;

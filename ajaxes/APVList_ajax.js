@@ -26,6 +26,29 @@ let getAPV = (component, data, when_CB, catch_CB) => {
     });
 };
 
+let getAPV_XML = async (component, data, when_CB, catch_CB) => {
+  let token = JSON.parse(localStorage.getItem("userData"))?.token;
+  data.token = token;
+
+  await component
+    .axios({
+      method: "GET",
+      timeout: 15000,
+      url: `${api_url}getAPV_XML/`,
+      params: data,
+    })
+    .then((response) => {
+      when_CB(response.data);
+    })
+    .catch((error) => {
+      if (error) {
+        let errorObject = error.toJSON();
+        defaultCatch_CB(component, errorObject);
+        catch_CB(errorObject);
+      }
+    });
+};
+
 let addAPV = (component, data, when_CB, catch_CB) => {
   let token = JSON.parse(localStorage.getItem("userData"))?.token;
   data.token = token;
@@ -143,6 +166,7 @@ let changeApvKrug = (component, data, when_CB, catch_CB) => {
 
 export default {
   getAPV,
+  getAPV_XML,
   addAPV,
   deleteAPV,
   updateApvOptions,

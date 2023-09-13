@@ -59,15 +59,30 @@
             </md-table-toolbar>
 
             <md-table-row slot="md-table-row" slot-scope="{ item }">
-              <md-table-cell md-label="Реквизиты терминала">
+              <md-table-cell
+                md-label="Реквизиты терминала"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <dispatcher-terminal-card
                   :item="item"
                 ></dispatcher-terminal-card>
               </md-table-cell>
-              <md-table-cell md-label="Метка времени">
+              <md-table-cell
+                md-label="Метка времени"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <simple-item-lts-card :item="item"></simple-item-lts-card>
               </md-table-cell>
-              <md-table-cell md-label="Заправка">
+              <md-table-cell
+                md-label="Заправка"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div v-if="item.chargeInfo.lts != undefined">
                   <div>
                     <b>{{ item.chargeInfo.v1 }}, л.</b>
@@ -78,7 +93,12 @@
                 </div>
                 <div v-else>-</div>
               </md-table-cell>
-              <md-table-cell md-label="Продано от датчика">
+              <md-table-cell
+                md-label="Продано от датчика"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div>
                   <b>Датчик: {{ item.data.v1 }}, л.</b>
                 </div>
@@ -86,7 +106,12 @@
                   <b>Продано: {{ item.data.v2 }}, л.</b>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Датчики">
+              <md-table-cell
+                md-label="Датчики"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div>
                   <b>Нет воды: {{ item.data.dv1 }}</b>
                 </div>
@@ -103,21 +128,35 @@
                   <b>4500 л.: {{ item.data.dv5 }}</b>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Остаток">
+              <md-table-cell
+                md-label="Остаток"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div>
                   <b>{{ item.remain }}, л.</b>
                 </div>
               </md-table-cell>
-              <md-table-cell md-label="Будет пуст через">
+              <md-table-cell
+                md-label="Будет пуст через"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div v-if="item.elapsedTime > 0">
-                  <b
-                    >{{ item.elapsedTime }}, ч. (~ {{ item.AVGHourlySell }},
-                    л./ч.)</b
-                  >
+                  <b>{{ item.elapsedTime }}, ч.</b>
+                  <br />
+                  <b> ~ {{ item.AVGHourlySell }}, л./ч.</b>
                 </div>
                 <div v-else>Ошибка</div>
               </md-table-cell>
-              <md-table-cell md-label="Ошибки">
+              <md-table-cell
+                md-label="Ошибки"
+                v-bind:class="{
+                  red: redStyle(item),
+                }"
+              >
                 <div class="my-col">
                   <div v-if="item.data.errorCode == 3"><b>нет воды</b></div>
                   <div v-if="item.data.errorCode == 4"><b>засор</b></div>
@@ -155,7 +194,7 @@
 import { Pagination } from "@/components";
 import DispatcherFilterCard from "../components/DispatcherTable/DispatcherFilterCard.vue";
 import DispatcherTerminalCard from "../components/DispatcherTable/DispatcherTerminalCard.vue";
-import SimpleItemLtsCard from "../components/common/SimpleItemLTSCard.vue";
+import SimpleItemLtsCard from "../components/common/SimpleItemLTSCardSplitted.vue";
 
 export default {
   components: {
@@ -185,8 +224,8 @@ export default {
 
       // pagination params
       currentPage: 1,
-      perPage: 50,
-      perPageOptions: [25, 50, 100],
+      perPage: 100,
+      perPageOptions: [25, 50, 100, 300],
       // pagination params
 
       requestData: { sortType: 0, queryRemain: 0, apvs: [] },
@@ -197,7 +236,15 @@ export default {
       this.requestData = requestData;
       this.load();
     },
-
+    redStyle(item) {
+      return (
+        item.errorCode == 18 ||
+        item.data.errorCode == 3 ||
+        item.data.errorCode == 4 ||
+        item.data.errorCode == 15 ||
+        item.online == false
+      );
+    },
     load() {
       this.ajax.getDispatcherMain(
         this,
@@ -243,6 +290,10 @@ export default {
   justify-content: space-between;
   margin-left: 20px;
   margin-right: 20px;
+}
+
+.red {
+  background-color: red;
 }
 
 .my-col {

@@ -34,7 +34,7 @@ let getInkas_XML = async (component, data, when_CB, catch_CB) => {
     .axios({
       method: "GET",
       timeout: 15000,
-      url: `${api_url}getInkas/`,
+      url: `${api_url}getInkas_XML/`,
       params: data,
     })
     .then((response) => {

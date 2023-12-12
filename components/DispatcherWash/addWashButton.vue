@@ -2,7 +2,7 @@
   <div class="my-user-item-container">
     <md-button
       @click.native="showDialog = true"
-      class="md-primary my-md-button"
+      class="md-success my-md-button"
     >
       <span class="material-icons"> add </span>
       добавить
@@ -23,6 +23,18 @@
             <md-field>
               <label>Комментарий</label>
               <md-input v-model="comment__" type="text"></md-input>
+            </md-field>
+            <md-field class="my-dialog-content">
+              <label for="pages">Ответственный</label>
+              <md-select v-model="user__" name="pages">
+                <md-option
+                  v-for="item in Object.values(usersModel)"
+                  :key="item.uid"
+                  :value="getUserName(item)"
+                >
+                  {{ getUserName(item) }}
+                </md-option>
+              </md-select>
             </md-field>
           </div>
         </div>
@@ -47,6 +59,12 @@ export default {
   },
 
   props: {
+    usersModel: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
     item: {
       type: Object,
       default: () => {
@@ -65,16 +83,25 @@ export default {
       showDialog: false,
       comment__: "",
       sn__: "",
+      user__: "",
       date__: new Date(this.item.date),
     };
   },
   methods: {
+    getUserName(item) {
+      let __name = item?.extended?.name || "";
+      let __secondName = item?.extended?.scondName || "";
+
+      return __name + __secondName + " (" + item.email + ")";
+    },
+
     dateChanged(newValue) {
       this.date__ = newValue;
     },
     add() {
       let data = {
         sn: this.sn__,
+        user: this.user__,
         comment: this.comment__,
         date: Math.round(this.date__.getTime() / 1000),
       };

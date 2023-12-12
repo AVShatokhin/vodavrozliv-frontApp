@@ -32,10 +32,43 @@
           <md-button
             class="md-info w100"
             @click="
+              setThisWeek();
+              showDateSelector = false;
+            "
+            >Текущая неделя</md-button
+          >
+          <md-button
+            class="md-info w100"
+            @click="
+              setThisAndNextWeek();
+              showDateSelector = false;
+            "
+            >Текущая и следующая неделя</md-button
+          >
+          <md-button
+            class="md-info w100"
+            @click="
               setThisMonth();
               showDateSelector = false;
             "
             >Текущий месяц</md-button
+          >
+          <md-button
+            class="md-info w100"
+            @click="
+              setThisFullMonth();
+              showDateSelector = false;
+            "
+            >Текущий месяц полностью</md-button
+          >
+
+          <md-button
+            class="md-info w100"
+            @click="
+              setThisAndNextMonth();
+              showDateSelector = false;
+            "
+            >Текущий и следующий месяц</md-button
           >
           <md-button
             class="md-info w100"
@@ -173,11 +206,39 @@ export default {
 
       this.range = [from, to];
     },
+    setThisWeek() {
+      let from = new Date();
+      from.setDate(from.getDate() - from.getDay() + 1);
+      from.setHours(0, 0, 0);
+      let to = new Date();
+      to.setDate(from.getDate() + 7);
+      to.setHours(23, 59, 59);
+      this.range = [from, to];
+    },
+    setThisAndNextWeek() {
+      let from = new Date();
+      from.setDate(from.getDate() - from.getDay() + 1);
+      from.setHours(0, 0, 0);
+      let to = new Date();
+      to.setDate(from.getDate() + 14);
+      to.setHours(23, 59, 59);
+      this.range = [from, to];
+    },
     setThisMonth() {
       let from = new Date();
       from.setDate(1);
       from.setHours(0, 0, 0);
       let to = new Date();
+      to.setHours(23, 59, 59);
+      this.range = [from, to];
+    },
+    setThisFullMonth() {
+      let from = new Date();
+      from.setDate(1);
+      from.setHours(0, 0, 0);
+      let to = new Date();
+      to.setMonth(from.getMonth() + 1);
+      to.setDate(0);
       to.setHours(23, 59, 59);
       this.range = [from, to];
     },
@@ -189,6 +250,16 @@ export default {
       let to = new Date();
       to.setDate(0);
       to.setMonth(to.getMonth());
+      to.setHours(23, 59, 59);
+      this.range = [from, to];
+    },
+    setThisAndNextMonth() {
+      let from = new Date();
+      from.setDate(1);
+      from.setHours(0, 0, 0);
+      let to = new Date();
+      to.setMonth(from.getMonth() + 2);
+      to.setDate(0);
       to.setHours(23, 59, 59);
       this.range = [from, to];
     },

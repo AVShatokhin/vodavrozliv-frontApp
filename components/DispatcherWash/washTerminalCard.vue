@@ -1,12 +1,14 @@
 <template>
-  <div class="terminal_card">
+  <div :class="terminalCardStyle(item)">
     <md-button @click="showComment = true" class="md-simple md-just-icon"
-      ><md-icon>question_mark</md-icon>
+      ><md-icon>exit_to_app</md-icon>
 
       <md-dialog :md-active.sync="showComment">
-        <md-dialog-title>Комментарий</md-dialog-title>
+        <md-dialog-title>Детали</md-dialog-title>
         <div class="div__my-dialog-content">
-          <b>{{ item.comment }}</b>
+          Комментарий:<b> {{ item.comment || "Нет комментария" }}</b
+          ><br />
+          Ответственный: <b> {{ item.user || "Не назначен" }}</b>
         </div>
         <md-dialog-actions>
           <md-button class="md-default" @click="showComment = false"
@@ -60,6 +62,11 @@ export default {
     };
   },
   methods: {
+    terminalCardStyle(item) {
+      let __baseStyle = "terminal_card ";
+      if (item?.comment != "") __baseStyle += "is_comment";
+      return __baseStyle;
+    },
     deleteItem() {
       this.ajax.post(
         this,
@@ -97,9 +104,15 @@ export default {
   padding-left: 8px;
   justify-content: space-between;
   flex-direction: row;
-  width: 100px;
+  width: 110px;
   background-color: paleturquoise;
   border-radius: 8px;
+  border-width: 2px;
+}
+
+.is_comment {
+  border-style: solid;
+  border-color: brown;
 }
 
 .terminal_sn {

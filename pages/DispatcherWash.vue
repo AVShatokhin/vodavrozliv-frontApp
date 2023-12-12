@@ -85,12 +85,15 @@
                   </wash-terminal-card>
                 </div>
               </md-table-cell>
+
               <md-table-cell md-label="">
-                <add-wash-button
+                <button-box
                   :item="item"
                   :apvs="apvs"
+                  :usersModel="usersModel"
+                  :washObject="item.washObject"
                   @itemAdded="load()"
-                ></add-wash-button>
+                ></button-box>
               </md-table-cell>
             </md-table-row>
           </md-table>
@@ -118,11 +121,16 @@
 <script>
 import FilterCard from "../components/DispatcherWash/FilterCard.vue";
 import { Pagination } from "@/components";
-import AddWashButton from "../components/DispatcherWash/addWashButton.vue";
 import WashTerminalCard from "../components/DispatcherWash/washTerminalCard.vue";
+import ButtonBox from "../components/DispatcherWash/buttonBox.vue";
 
 export default {
-  components: { FilterCard, Pagination, AddWashButton, WashTerminalCard },
+  components: {
+    FilterCard,
+    Pagination,
+    WashTerminalCard,
+    ButtonBox,
+  },
   computed: {
     to() {
       let highBound = this.from + this.perPage;
@@ -140,6 +148,7 @@ export default {
       // модель данных
       model: [],
       queryLength: 0,
+      usersModel: [],
       // модель данных
 
       // pagination params
@@ -235,6 +244,25 @@ export default {
       return __result;
     },
     load() {
+      this.ajax.get(
+        this,
+        "getAllWashers",
+        {
+          perPage: this.perPage,
+          currentPage: this.currentPage - 1,
+          requestData: this.requestData,
+        },
+        (r) => {
+          if (r.status == "ok") {
+            this.usersModel = [];
+            this.usersModel = r.data;
+          } else {
+            this.showErrorNotify(this, r);
+          }
+        },
+        (err) => {}
+      );
+
       this.ajax.get(
         this,
         "getWash",

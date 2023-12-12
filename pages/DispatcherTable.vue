@@ -238,7 +238,7 @@ export default {
     },
     redStyle(item) {
       return (
-        item.errorCode == 18 ||
+        item.data.errorCode == 18 ||
         item.data.errorCode == 3 ||
         item.data.errorCode == 4 ||
         item.data.errorCode == 15 ||

@@ -246,6 +246,8 @@ export default {
         "Мелочь кассира": "m_summ",
         "Купюры кассира": "k",
         "Сумма кассира": "cashierSumm",
+        "Мелочь терминала": "box",
+        "Купюры терминала": "kup",
         "Сумма терминала": "terminalSumm",
         Разница: "delta",
         Безнал: "rd",
@@ -323,20 +325,6 @@ export default {
           loadXML: true,
         },
         (r) => {
-          // let FROM_DATE = (date) => {
-          //   if (date == null) return;
-
-          //   let __date = new Date(date);
-
-          //   return `${1900 + __date.getYear()}-${
-          //     1 + __date.getMonth() > 9
-          //       ? 1 + __date.getMonth()
-          //       : "0" + (1 + __date.getMonth())
-          //   }-${
-          //     __date.getDate() > 9 ? __date.getDate() : "0" + __date.getDate()
-          //   }`;
-          // };
-
           if (r.status == "ok") {
             r.data.items.forEach((e) => {
               if (!e.isPrihod) return;

@@ -30,7 +30,7 @@
                 <md-option
                   v-for="item in Object.values(usersModel)"
                   :key="item.uid"
-                  :value="getUserName(item)"
+                  :value="item.uid"
                 >
                   {{ getUserName(item) }}
                 </md-option>
@@ -38,6 +38,7 @@
             </md-field>
           </div>
         </div>
+
         <md-dialog-actions>
           <md-button class="md-default" @click="showDialog = false"
             >Закрыть</md-button
@@ -94,6 +95,21 @@ export default {
 
       return __name + __secondName + " (" + item.email + ")";
     },
+    getUserNameByUID(uid) {
+      let __name = "";
+      let __secondName = "";
+      let __email = "";
+
+      this.usersModel.forEach((item) => {
+        if (item.uid == uid) {
+          __name = item?.extended?.name || "";
+          __secondName = item?.extended?.scondName || "";
+          __email = item?.email || "";
+        }
+      });
+
+      return __name + __secondName + " (" + __email + ")";
+    },
 
     dateChanged(newValue) {
       this.date__ = newValue;
@@ -101,8 +117,9 @@ export default {
     add() {
       let data = {
         sn: this.sn__,
-        user: this.user__,
+        user: this.getUserNameByUID(this.user__),
         comment: this.comment__,
+        uid: this.user__,
         date: Math.round(this.date__.getTime() / 1000),
       };
 

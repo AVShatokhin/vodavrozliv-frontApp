@@ -80,7 +80,9 @@
                     :key="washObject.sn"
                     :item="washObject"
                     :date="item.date"
+                    :usersModel="usersModel"
                     @itemDeleted="load()"
+                    @itemChanged="load()"
                   >
                   </wash-terminal-card>
                 </div>

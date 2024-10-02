@@ -149,6 +149,7 @@ export default {
         apvs: [],
         dateFrom: 0,
         dateTo: 0,
+        sortType: 0,
       },
 
       exportFileName: "",

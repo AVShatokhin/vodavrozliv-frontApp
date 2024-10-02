@@ -14,6 +14,19 @@
         >
         </advanced-date-picker>
       </div>
+      <div class="my-row-item">
+        <md-field>
+          <label>Сортировка</label>
+          <md-select v-model="sortType">
+            <md-option
+              v-for="item in sortTypeNames"
+              :key="item.value"
+              :value="item.value"
+              >{{ item.name }}</md-option
+            >
+          </md-select>
+        </md-field>
+      </div>
     </div>
 
     <div class="my-row-actions">
@@ -39,10 +52,18 @@ export default {
 
   data() {
     return {
+      sortType: 0,
+      sortTypeNames: [
+        { value: 0, name: "по серийному номеру" },
+        { value: 1, name: "по убыванию продаж" },
+        { value: 2, name: "по возрастанию продаж" },
+      ],
+
       requestData: {
         apvs: [],
         dateFrom: 0,
         dateTo: 0,
+        sortType: 0,
       },
       resetFilterCmd: null,
     };
@@ -54,9 +75,11 @@ export default {
     },
 
     sendRequest() {
+      this.requestData.sortType = this.sortType;
       this.$emit("sendRequest", this.requestData);
     },
     resetFilter() {
+      this.sortType = 0;
       this.resetFilterCmd = !this.resetFilterCmd;
     },
     snArrayChanged(apvs) {

@@ -158,6 +158,7 @@ export default {
         apvs: [],
         dateFrom: 0,
         dateTo: 0,
+        sortType: 0,
       },
 
       podItog: {},
@@ -215,17 +216,17 @@ export default {
         return n > 9 ? n : "0" + n;
       };
 
-      let FROM_DATE = (date) => {
-        if (date == null) return;
+      // let FROM_DATE = (date) => {
+      //   if (date == null) return;
 
-        let __date = new Date(date);
+      //   let __date = new Date(date);
 
-        return `${1900 + __date.getYear()}-${
-          1 + __date.getMonth() > 9
-            ? 1 + __date.getMonth()
-            : "0" + (1 + __date.getMonth())
-        }-${norm(__date.getDate())}`;
-      };
+      //   return `${1900 + __date.getYear()}-${
+      //     1 + __date.getMonth() > 9
+      //       ? 1 + __date.getMonth()
+      //       : "0" + (1 + __date.getMonth())
+      //   }-${norm(__date.getDate())}`;
+      // };
 
       let FILE_NAME = (name) => {
         let __date = new Date();

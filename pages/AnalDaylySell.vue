@@ -75,11 +75,14 @@
               <md-table-cell md-label="Реквизиты терминала">
                 <anal-terminal-card :item="item"></anal-terminal-card>
               </md-table-cell>
+              <md-table-cell md-label="Час">
+                <div>{{ item.AVGHourlySell }}, л.</div>
+              </md-table-cell>
               <md-table-cell md-label="День">
                 <div>{{ item.AVGDaylySell }}, л.</div>
               </md-table-cell>
-              <md-table-cell md-label="Час">
-                <div>{{ item.AVGHourlySell }}, л.</div>
+              <md-table-cell md-label="Месяц">
+                <div>{{ item.AVGMonthlySell }}, л.</div>
               </md-table-cell>
               <md-table-cell md-label=""> </md-table-cell>
             </md-table-row>
@@ -150,6 +153,7 @@ export default {
         Address: "address",
         Dayly: "dayly",
         Hourly: "hourly",
+        Monthly: "monthly",
       },
     };
   },
@@ -198,6 +202,7 @@ export default {
                 address: apv.address,
                 dayly: new String(apv.AVGDaylySell).replace(".", ","),
                 hourly: new String(apv.AVGHourlySell).replace(".", ","),
+                monthly: new String(apv.AVGMonthlySell).replace(".", ","),
               });
             });
           } else {

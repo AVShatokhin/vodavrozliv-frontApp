@@ -10,6 +10,7 @@ import CmdsPanel from "@/app/pages/CmdsPanel.vue";
 import CmdsInkas from "@/app/pages/CmdsInkas.vue";
 import DispatcherTable from "@/app/pages/DispatcherTable.vue";
 import DispatcherWash from "@/app/pages/DispatcherWash.vue";
+import DispatcherHistory from "@/app/pages/DispatcherHistory.vue";
 import AnalDaylySell from "@/app/pages/AnalDaylySell.vue";
 import CashierInkass from "@/app/pages/CashierInkass.vue";
 import CashierTotals from "@/app/pages/CashierTotals.vue";
@@ -74,6 +75,11 @@ export default [
     path: "/DispatcherWash",
     component: DispatcherWash,
     name: `Расписание моек`,
+  },
+  {
+    path: "/DispatcherHistory",
+    component: DispatcherHistory,
+    name: `История`,
   },
   {
     path: "/AnalDaylySell",

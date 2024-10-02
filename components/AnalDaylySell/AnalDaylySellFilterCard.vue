@@ -5,6 +5,19 @@
         :resetFilter="resetFilterCmd"
         @snArrayChanged="snArrayChanged"
       ></sn-selector>
+      <div class="my-row-item">
+        <md-field>
+          <label>Сортировка</label>
+          <md-select v-model="sortType">
+            <md-option
+              v-for="item in sortTypeNames"
+              :key="item.value"
+              :value="item.value"
+              >{{ item.name }}</md-option
+            >
+          </md-select>
+        </md-field>
+      </div>
     </div>
     <div class="my-row-actions">
       <md-button class="md-default buttons" @click="resetFilter()">
@@ -29,35 +42,11 @@ export default {
 
   data() {
     return {
-      json_data: [
-        {
-          index: 0,
-          sn: "T0001",
-          address: "jhvbjhbj",
-          dayly: "11",
-          horly: "12",
-        },
-        {
-          index: 1,
-          sn: "T0002",
-          address: "jhvbjhbj",
-          dayly: "11",
-          hourly: "12",
-        },
-      ],
-      json_meta: [
-        [
-          {
-            key: "charset",
-            value: "utf-8",
-          },
-        ],
-      ],
       sortType: 0,
       sortTypeNames: [
         { value: 0, name: "по серийному номеру" },
-        { value: 1, name: "по убыванию остатка" },
-        { value: 2, name: "по возрастанию остатка" },
+        { value: 1, name: "по убыванию продаж" },
+        { value: 2, name: "по возрастанию продаж" },
       ],
 
       data: {},

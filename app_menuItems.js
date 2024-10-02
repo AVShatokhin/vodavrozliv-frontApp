@@ -82,6 +82,11 @@ let dispatcher = {
       path: "/DispatcherWash",
       roles: ["DISPATCHER", "HEAD_OP_DEP"],
     },
+    {
+      name: "История",
+      path: "/DispatcherHistory",
+      roles: ["DISPATCHER", "HEAD_OP_DEP"],
+    },
   ],
 };
 

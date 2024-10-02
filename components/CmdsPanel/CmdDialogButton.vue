@@ -100,6 +100,8 @@ export default {
         "rd:off": "Выключить модуль б/н оплаты",
         "rd:on": "Включить модуль б/н оплаты",
         "alarm:off": "Выключить сигнализацию",
+        "san:on": "Вкл. Санитарную обработку",
+        "san:off": "Выкл. Санитарную обработку",
         info: "Запросить состояние",
         inkas1: "Cлот #1",
         inkas2: "Слот #2",
@@ -136,6 +138,10 @@ export default {
         [
           { cmd: "rd:off", showDialog: false },
           { cmd: "rd:on", showDialog: false },
+        ],
+        [
+          { cmd: "san:on", showDialog: false },
+          { cmd: "san:off", showDialog: false },
         ],
         [{ cmd: "alarm:off", showDialog: false }],
         [{ cmd: "info", showDialog: false }],
